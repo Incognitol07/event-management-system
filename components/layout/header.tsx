@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Menu, Search, Bell, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { RoleSwitcher } from "@/components/ui/role-switcher";
 
 interface HeaderProps {
   title?: string;
@@ -46,8 +47,7 @@ const Header = ({ title }: HeaderProps) => {
                 type="search"
               />
             </div>
-          </div>
-
+          </div>{" "}
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
@@ -55,7 +55,8 @@ const Header = ({ title }: HeaderProps) => {
               3
             </span>
           </Button>
-
+          {/* Role Switcher for Demo */}
+          <RoleSwitcher />
           {/* Profile */}
           <Button variant="ghost" size="icon">
             <User className="h-5 w-5" />

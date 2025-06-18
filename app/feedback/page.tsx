@@ -1,12 +1,12 @@
+import { FeedbackList } from "@/components/feedback/feedback-list";
 import { MainLayout } from "@/components/layout/main-layout";
-import { AttendeesList } from "@/components/attendees/attendees-list";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-export default function AttendeesPage() {
+export default function FeedbackPage() {
   return (
     <ProtectedRoute requiredRoles={["admin", "organizer"]}>
-      <MainLayout title="Attendees">
-        <AttendeesList />
+      <MainLayout title="Feedback">
+        <FeedbackList />
       </MainLayout>
     </ProtectedRoute>
   );

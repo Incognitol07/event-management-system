@@ -1,12 +1,12 @@
+import { OrganizerPortal } from "@/components/organizer/organizer-portal";
 import { MainLayout } from "@/components/layout/main-layout";
-import { AttendeesList } from "@/components/attendees/attendees-list";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-export default function AttendeesPage() {
+export default function OrganizerPage() {
   return (
     <ProtectedRoute requiredRoles={["admin", "organizer"]}>
-      <MainLayout title="Attendees">
-        <AttendeesList />
+      <MainLayout title="Organizer Portal">
+        <OrganizerPortal />
       </MainLayout>
     </ProtectedRoute>
   );

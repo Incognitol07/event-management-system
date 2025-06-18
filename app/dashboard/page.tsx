@@ -1,12 +1,12 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { EventsList } from "@/components/events/events-list";
+import { Dashboard } from "@/components/dashboard/dashboard";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-export default function EventsPage() {
+export default function DashboardPage() {
   return (
     <ProtectedRoute>
-      <MainLayout title="Events">
-        <EventsList />
+      <MainLayout title="Dashboard">
+        <Dashboard />
       </MainLayout>
     </ProtectedRoute>
   );

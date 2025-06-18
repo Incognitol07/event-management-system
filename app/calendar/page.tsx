@@ -1,12 +1,12 @@
+import { EventCalendar } from "@/components/calendar/event-calendar";
 import { MainLayout } from "@/components/layout/main-layout";
-import { EventsList } from "@/components/events/events-list";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 
-export default function EventsPage() {
+export default function CalendarPage() {
   return (
     <ProtectedRoute>
-      <MainLayout title="Events">
-        <EventsList />
+      <MainLayout title="Calendar">
+        <EventCalendar />
       </MainLayout>
     </ProtectedRoute>
   );
