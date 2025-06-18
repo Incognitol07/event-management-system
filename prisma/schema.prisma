@@ -1,0 +1,132 @@
+// University Event Management System - Prisma Schema
+// This schema represents a comprehensive event management solution for universities
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// LOCATION ENTITY
+// Represents event venues (e.g., lecture halls, auditoriums)
+model Location {
+  id           Int    @id @default(autoincrement()) @map("LocationID")
+  locationName String @map("LocationName") @db.VarChar(255)
+  capacity     Int    @map("Capacity")
+
+  // Relationships
+  events Event[]
+
+  @@map("Location")
+}
+
+// ORGANIZER ENTITY  
+// Represents departments or clubs organizing events
+model Organizer {
+  id         Int    @id @default(autoincrement()) @map("OrgID")
+  orgName    String @map("OrgName") @db.VarChar(255)
+  orgContact String @map("OrgContact") @db.VarChar(255)
+
+  // Relationships
+  eventOrganizers EventOrganizer[]
+
+  @@map("Organizer")
+}
+
+// ATTENDEE ENTITY
+// Represents students or staff attending events
+model Attendee {
+  id           Int     @id @default(autoincrement()) @map("AttendeeID")
+  attendeeName String  @map("AttendeeName") @db.VarChar(255)
+  email        String  @unique @db.VarChar(255)
+  studentId    String? @map("StudentID") @db.VarChar(50) // Optional for staff
+
+  // Relationships
+  eventAttendees EventAttendee[]
+
+  @@map("Attendee")
+}
+
+// RESOURCE ENTITY
+// Represents equipment needed for events (e.g., projector, microphone)
+model Resource {
+  id                Int    @id @default(autoincrement()) @map("ResourceID")
+  resourceName      String @map("ResourceName") @db.VarChar(255)
+  quantityAvailable Int    @map("QuantityAvailable")
+
+  // Relationships
+  eventResources EventResource[]
+
+  @@map("Resource")
+}
+
+// EVENT ENTITY
+// Represents a campus event (e.g., lecture, concert, seminar)
+model Event {
+  id             Int       @id @default(autoincrement()) @map("EventID")
+  eventName      String    @map("EventName") @db.VarChar(255)
+  eventDate      DateTime  @map("EventDate") @db.Date
+  startTime      DateTime  @map("StartTime") @db.Time
+  endTime        DateTime  @map("EndTime") @db.Time
+  locationId     Int       @map("LocationID")
+  isRecurring    Boolean   @default(false) @map("IsRecurring")
+  recurStartDate DateTime? @map("RecurStartDate") @db.Date
+  recurEndDate   DateTime? @map("RecurEndDate") @db.Date
+
+  // Relationships
+  location        Location         @relation(fields: [locationId], references: [id])
+  eventOrganizers EventOrganizer[]
+  eventAttendees  EventAttendee[]
+  eventResources  EventResource[]
+
+  @@map("Event")
+}
+
+// EVENT_ORGANIZER ASSOCIATIVE ENTITY
+// Links Events and Organizers (many-to-many relationship)
+model EventOrganizer {
+  eventId     Int    @map("EventID")
+  organizerId Int    @map("OrgID")
+  role        String @map("Role") @db.VarChar(100) // e.g., "primary organizer", "co-organizer"
+
+  // Relationships
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  organizer Organizer @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, organizerId])
+  @@map("Event_Organizer")
+}
+
+// EVENT_ATTENDEE ASSOCIATIVE ENTITY
+// Links Events and Attendees (many-to-many relationship)
+model EventAttendee {
+  eventId          Int      @map("EventID")
+  attendeeId       Int      @map("AttendeeID")
+  registrationDate DateTime @default(now()) @map("RegistrationDate")
+
+  // Relationships
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  attendee Attendee @relation(fields: [attendeeId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, attendeeId])
+  @@map("Event_Attendee")
+}
+
+// EVENT_RESOURCE ASSOCIATIVE ENTITY
+// Links Events and Resources (many-to-many relationship)
+model EventResource {
+  eventId        Int @map("EventID")
+  resourceId     Int @map("ResourceID")
+  quantityNeeded Int @map("QuantityNeeded")
+
+  // Relationships
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, resourceId])
+  @@map("Event_Resource")
+}
