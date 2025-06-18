@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+  --radius: 0.75rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Force light theme - remove dark mode to fix visibility issues */
+* {
+  border-color: hsl(var(--border));
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Ensure all text is dark and readable */
+h1, h2, h3, h4, h5, h6 {
+  color: #0f172a;
+}
+
+/* Fix card backgrounds */
+.bg-card {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+/* Fix muted text */
+.text-muted-foreground {
+  color: #64748b !important;
+}
+
+/* Fix gray text colors */
+.text-gray-600 {
+  color: #475569 !important;
+}
+
+.text-gray-700 {
+  color: #334155 !important;
+}
+
+.text-gray-900 {
+  color: #0f172a !important;
+}
+
+.text-gray-500 {
+  color: #64748b !important;
+}
+
+/* Fix button and input visibility */
+.bg-background {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+.border-input {
+  border-color: #d1d5db !important;
+}
+
+/* Fix sidebar */
+.bg-white {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
 }
