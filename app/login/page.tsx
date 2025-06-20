@@ -2,232 +2,102 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { useAuth, User, UserRole } from "@/lib/auth-context";
-import {
-  Calendar,
-  Mail,
-  Lock,
-  User as UserIcon,
-  ArrowRight,
-} from "lucide-react";
-
-const presetUsers: User[] = [
-  {
-    id: "1",
-    name: "Dr. Sarah Admin",
-    email: "admin@university.edu",
-    role: "admin",
-  },
-  {
-    id: "2",
-    name: "Mike Organizer",
-    email: "organizer@university.edu",
-    role: "organizer",
-  },
-  {
-    id: "3",
-    name: "Jane Student",
-    email: "student@university.edu",
-    role: "attendee",
-  },
-];
+import { useAuth } from "@/lib/auth-context";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const { login } = useAuth();
   const router = useRouter();
 
-  const getRoleBadgeColor = (role: UserRole) => {
-    switch (role) {
-      case "admin":
-        return "bg-red-100 text-red-700";
-      case "organizer":
-        return "bg-blue-100 text-blue-700";
-      case "attendee":
-        return "bg-green-100 text-green-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // Simulate login delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // For demo purposes, find user by email
-    const user = presetUsers.find((u) => u.email === email);
-    if (user) {
-      login(user);
+    const success = await login(email);
+    if (success) {
       router.push("/dashboard");
     } else {
-      alert("User not found. Please use one of the preset accounts.");
+      setError("Invalid email. Please try one of the demo accounts.");
     }
-
     setIsLoading(false);
   };
 
-  const handleQuickLogin = (user: User) => {
-    login(user);
-    router.push("/dashboard");
-  };
+  const demoAccounts = [
+    { email: "admin@university.edu", role: "Admin" },
+    { email: "coordinator@university.edu", role: "Staff/Coordinator" },
+    { email: "alice@university.edu", role: "Student" },
+    { email: "bob@university.edu", role: "Student" },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl">
-        <div className="text-center mb-8">
-          <div className="flex justify-center items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-3xl font-bold text-gray-900">EventFlow</span>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Event Management System
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Sign in to your account
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email" className="sr-only">
+              Email address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              className="relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
-          <p className="text-gray-600">
-            Sign in to access your university event management system
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Login Form */}
-          <Card className="border-0 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
+          {error && (
+            <div className="text-red-600 text-sm text-center">{error}</div>
+          )}
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? (
-                    "Signing in..."
-                  ) : (
-                    <>
-                      Sign In
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </form>
-
-              <div className="text-center">
-                <a
-                  href="#"
-                  className="text-sm text-blue-600 hover:text-blue-500"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Login Options */}
-          <Card className="border-0 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">
-                Demo Access
-              </CardTitle>
-              <p className="text-sm text-gray-600 text-center">
-                Quick login with different user roles
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {presetUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="p-4 border rounded-lg cursor-pointer transition-all hover:shadow-md hover:border-blue-300"
-                  onClick={() => handleQuickLogin(user)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                        <UserIcon className="w-5 h-5 text-gray-600" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {user.name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {user.email}
-                        </div>
-                      </div>
-                    </div>
-                    <Badge className={getRoleBadgeColor(user.role)}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <h4 className="font-medium text-blue-900 mb-2">
-                  Role Permissions:
-                </h4>
-                <ul className="text-sm text-blue-700 space-y-1">
-                  <li>
-                    <strong>Admin:</strong> Full system access
-                  </li>
-                  <li>
-                    <strong>Organizer:</strong> Event management & attendees
-                  </li>
-                  <li>
-                    <strong>Attendee:</strong> View events & register
-                  </li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="text-center mt-8">
-          <p className="text-sm text-gray-500">
-            Don't have an account?{" "}
-            <a
-              href="#"
-              className="text-blue-600 hover:text-blue-500 font-medium"
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              Contact your administrator
-            </a>
-          </p>
+              {isLoading ? "Signing in..." : "Sign in"}
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-50 text-gray-500">
+                Demo Accounts
+              </span>
+            </div>
+          </div>
+          <div className="mt-3 space-y-2">
+            {demoAccounts.map((account) => (
+              <button
+                key={account.email}
+                onClick={() => setEmail(account.email)}
+                className="w-full text-left px-3 py-2 text-sm border border-gray-200 rounded hover:bg-gray-100"
+              >
+                <div className="font-medium">{account.email}</div>
+                <div className="text-gray-500">{account.role}</div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

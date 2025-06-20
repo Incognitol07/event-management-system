@@ -1,132 +1,116 @@
-// University Event Management System - Prisma Schema
-// This schema represents a comprehensive event management solution for universities
-
+// Simplified Event Management System - Core Features Only
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
-// LOCATION ENTITY
-// Represents event venues (e.g., lecture halls, auditoriums)
-model Location {
-  id           Int    @id @default(autoincrement()) @map("LocationID")
-  locationName String @map("LocationName") @db.VarChar(255)
-  capacity     Int    @map("Capacity")
+// Core User model - simplified roles
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  role     Role    @default(STUDENT)
+  matricNo String?
+
+  // Relationships
+  organizedEvents Event[]     @relation("EventOrganizer")
+  attendedEvents  EventRSVP[]
+  feedback        Feedback[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  STUDENT
+}
+
+// Simplified Venue model
+model Venue {
+  id       Int    @id @default(autoincrement())
+  name     String
+  capacity Int
 
   // Relationships
   events Event[]
 
-  @@map("Location")
+  @@map("venues")
 }
 
-// ORGANIZER ENTITY  
-// Represents departments or clubs organizing events
-model Organizer {
-  id         Int    @id @default(autoincrement()) @map("OrgID")
-  orgName    String @map("OrgName") @db.VarChar(255)
-  orgContact String @map("OrgContact") @db.VarChar(255)
-
-  // Relationships
-  eventOrganizers EventOrganizer[]
-
-  @@map("Organizer")
-}
-
-// ATTENDEE ENTITY
-// Represents students or staff attending events
-model Attendee {
-  id           Int     @id @default(autoincrement()) @map("AttendeeID")
-  attendeeName String  @map("AttendeeName") @db.VarChar(255)
-  email        String  @unique @db.VarChar(255)
-  studentId    String? @map("StudentID") @db.VarChar(50) // Optional for staff
-
-  // Relationships
-  eventAttendees EventAttendee[]
-
-  @@map("Attendee")
-}
-
-// RESOURCE ENTITY
-// Represents equipment needed for events (e.g., projector, microphone)
-model Resource {
-  id                Int    @id @default(autoincrement()) @map("ResourceID")
-  resourceName      String @map("ResourceName") @db.VarChar(255)
-  quantityAvailable Int    @map("QuantityAvailable")
-
-  // Relationships
-  eventResources EventResource[]
-
-  @@map("Resource")
-}
-
-// EVENT ENTITY
-// Represents a campus event (e.g., lecture, concert, seminar)
+// Core Event model with essential fields
 model Event {
-  id             Int       @id @default(autoincrement()) @map("EventID")
-  eventName      String    @map("EventName") @db.VarChar(255)
-  eventDate      DateTime  @map("EventDate") @db.Date
-  startTime      DateTime  @map("StartTime") @db.Time
-  endTime        DateTime  @map("EndTime") @db.Time
-  locationId     Int       @map("LocationID")
-  isRecurring    Boolean   @default(false) @map("IsRecurring")
-  recurStartDate DateTime? @map("RecurStartDate") @db.Date
-  recurEndDate   DateTime? @map("RecurEndDate") @db.Date
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String // Max 300 words enforced in app logic
+  date        DateTime
+  startTime   String // Store as string for simplicity (HH:MM format)
+  endTime     String
+  venueId     Int
+  capacity    Int
+  memo        String
+  isApproved  Boolean  @default(false)
+  priority    Priority @default(NORMAL)
+  createdById Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relationships
-  location        Location         @relation(fields: [locationId], references: [id])
-  eventOrganizers EventOrganizer[]
-  eventAttendees  EventAttendee[]
-  eventResources  EventResource[]
+  venue     Venue       @relation(fields: [venueId], references: [id])
+  createdBy User        @relation("EventOrganizer", fields: [createdById], references: [id])
+  rsvps     EventRSVP[]
+  feedback  Feedback[]
 
-  @@map("Event")
+  @@map("events")
 }
 
-// EVENT_ORGANIZER ASSOCIATIVE ENTITY
-// Links Events and Organizers (many-to-many relationship)
-model EventOrganizer {
-  eventId     Int    @map("EventID")
-  organizerId Int    @map("OrgID")
-  role        String @map("Role") @db.VarChar(100) // e.g., "primary organizer", "co-organizer"
-
-  // Relationships
-  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  organizer Organizer @relation(fields: [organizerId], references: [id], onDelete: Cascade)
-
-  @@id([eventId, organizerId])
-  @@map("Event_Organizer")
+enum Priority {
+  LOW
+  NORMAL
+  HIGH
+  EMERGENCY
 }
 
-// EVENT_ATTENDEE ASSOCIATIVE ENTITY
-// Links Events and Attendees (many-to-many relationship)
-model EventAttendee {
-  eventId          Int      @map("EventID")
-  attendeeId       Int      @map("AttendeeID")
-  registrationDate DateTime @default(now()) @map("RegistrationDate")
+// Simplified RSVP system
+model EventRSVP {
+  id      Int        @id @default(autoincrement())
+  eventId Int
+  userId  Int
+  status  RSVPStatus @default(PENDING)
+  rsvpAt  DateTime   @default(now())
 
   // Relationships
-  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  attendee Attendee @relation(fields: [attendeeId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([eventId, attendeeId])
-  @@map("Event_Attendee")
+  @@unique([eventId, userId])
+  @@map("event_rsvps")
 }
 
-// EVENT_RESOURCE ASSOCIATIVE ENTITY
-// Links Events and Resources (many-to-many relationship)
-model EventResource {
-  eventId        Int @map("EventID")
-  resourceId     Int @map("ResourceID")
-  quantityNeeded Int @map("QuantityNeeded")
+enum RSVPStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+// Simple feedback system
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  userId    Int
+  rating    Int // 1-5 scale
+  comment   String?
+  createdAt DateTime @default(now())
 
   // Relationships
-  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([eventId, resourceId])
-  @@map("Event_Resource")
+  @@unique([eventId, userId])
+  @@map("feedback")
 }

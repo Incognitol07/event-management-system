@@ -5,7 +5,6 @@ import { useInView } from "react-intersection-observer";
 import { useSpring, animated } from "@react-spring/web";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AuthStatus } from "@/components/auth/auth-status";
 import {
   Calendar,
   Users,
@@ -276,7 +275,8 @@ const EventShowcase = () => {
 
             const position = positions[index];
             const isFeatured = index === 0;
-            const isHighPriority = event.priority === "high" || event.priority === "featured";
+            const isHighPriority =
+              event.priority === "high" || event.priority === "featured";
 
             return (
               <div
@@ -291,82 +291,98 @@ const EventShowcase = () => {
                   zIndex: position.zIndex,
                 }}
               >
-              <div
-                key={event.id}
-                className={`absolute transition-all duration-700 hover:scale-110 hover:z-30 cursor-pointer group ${
-                  isFeatured ? "w-80" : "w-72"
-                }`}
-                style={{
-                  left: position.left,
-                  top: position.top,
-                  transform: position.transform,
-                  zIndex: position.zIndex,
-                }}
-              >
                 <div
-                  className={`bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 group-hover:border-blue-200 ${
-                    isFeatured ? "ring-2 ring-blue-500/30 shadow-blue-100" : ""
-                  } ${isHighPriority ? "shadow-lg" : "shadow-md"}`}
+                  key={event.id}
+                  className={`absolute transition-all duration-700 hover:scale-110 hover:z-30 cursor-pointer group ${
+                    isFeatured ? "w-80" : "w-72"
+                  }`}
+                  style={{
+                    left: position.left,
+                    top: position.top,
+                    transform: position.transform,
+                    zIndex: position.zIndex,
+                  }}
                 >
-                  {/* Card header with gradient */}
-                  <div className={`h-3 bg-gradient-to-r ${event.color}`}></div>
+                  <div
+                    className={`bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 group-hover:border-blue-200 ${
+                      isFeatured
+                        ? "ring-2 ring-blue-500/30 shadow-blue-100"
+                        : ""
+                    } ${isHighPriority ? "shadow-lg" : "shadow-md"}`}
+                  >
+                    {/* Card header with gradient */}
+                    <div
+                      className={`h-3 bg-gradient-to-r ${event.color}`}
+                    ></div>
 
-                  <div className="p-5">
-                    {/* Category and status */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{event.icon}</span>
-                        <span
-                          className={`text-xs font-semibold px-2 py-1 rounded-full ${event.bgColor} ${event.textColor}`}
-                        >
-                          {event.category}
+                    <div className="p-5">
+                      {/* Category and status */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">{event.icon}</span>
+                          <span
+                            className={`text-xs font-semibold px-2 py-1 rounded-full ${event.bgColor} ${event.textColor}`}
+                          >
+                            {event.category}
+                          </span>
+                        </div>
+                        <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
+                          {event.status}
                         </span>
                       </div>
-                      <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">
-                        {event.status}
-                      </span>
+
+                      {/* Event title */}
+                      <h4
+                        className={`font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors ${
+                          isFeatured ? "text-lg" : "text-base"
+                        }`}
+                      >
+                        {event.title}
+                      </h4>
+
+                      {/* Event description */}
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                        {event.description}
+                      </p>
+
+                      {/* Event details */}
+                      <div className="space-y-2 text-sm text-gray-500 mb-4">
+                        <div className="flex items-center gap-2">
+                          <span className="w-4 h-4">📅</span>
+                          <span>
+                            {event.date} • {event.time}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-4 h-4">📍</span>
+                          <span>{event.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-4 h-4">👥</span>
+                          <span>{event.attendees} attending</span>
+                        </div>
+                      </div>
+
+                      {/* CTA Button */}
+                      <button
+                        className={`w-full text-white py-2 px-4 rounded-lg font-medium transition-all duration-300 bg-gradient-to-r ${
+                          event.color
+                        } hover:shadow-lg hover:scale-[1.02] ${
+                          isFeatured ? "text-sm" : "text-xs"
+                        }`}
+                      >
+                        {event.status === "Register Now"
+                          ? "Register"
+                          : event.status === "Apply Now"
+                          ? "Apply"
+                          : event.status === "RSVP Required"
+                          ? "RSVP"
+                          : "Learn More"}
+                      </button>
                     </div>
-
-                    {/* Event title */}
-                    <h4 className={`font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors ${
-                      isFeatured ? "text-lg" : "text-base"
-                    }`}>
-                      {event.title}
-                    </h4>
-
-                    {/* Event description */}
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                      {event.description}
-                    </p>
-
-                    {/* Event details */}
-                    <div className="space-y-2 text-sm text-gray-500 mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="w-4 h-4">📅</span>
-                        <span>{event.date} • {event.time}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-4 h-4">📍</span>
-                        <span>{event.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-4 h-4">👥</span>
-                        <span>{event.attendees} attending</span>
-                      </div>
-                    </div>
-
-                    {/* CTA Button */}
-                    <button className={`w-full text-white py-2 px-4 rounded-lg font-medium transition-all duration-300 bg-gradient-to-r ${event.color} hover:shadow-lg hover:scale-[1.02] ${
-                      isFeatured ? "text-sm" : "text-xs"
-                    }`}>
-                      {event.status === "Register Now" ? "Register" : 
-                       event.status === "Apply Now" ? "Apply" : 
-                       event.status === "RSVP Required" ? "RSVP" : "Learn More"}
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
             );
           })}
         </div>
@@ -462,7 +478,6 @@ export default function Home() {
                 </div>
               </div>
 
-              <AuthStatus />
             </div>
           </div>
         </div>

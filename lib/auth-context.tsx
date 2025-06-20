@@ -1,96 +1,101 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-export type UserRole = "admin" | "organizer" | "attendee" | "guest";
-
-export interface User {
-  id: string;
+type User = {
+  id: number;
   name: string;
   email: string;
-  role: UserRole;
-}
+  role: "ADMIN" | "STAFF" | "STUDENT";
+  matricNo?: string;
+};
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
-  isAuthenticated: boolean;
-  login: (user: User) => void;
+  login: (email: string) => Promise<boolean>;
   logout: () => void;
-  hasRole: (role: UserRole | UserRole[]) => boolean;
-}
+  isLoading: boolean;
+  hasRole: (role: string | string[]) => boolean;
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Demo users for quick testing
+  const demoUsers: Record<string, User> = {
+    "admin@university.edu": {
+      id: 1,
+      name: "Admin User",
+      email: "admin@university.edu",
+      role: "ADMIN",
+    },
+    "coordinator@university.edu": {
+      id: 2,
+      name: "John Coordinator",
+      email: "coordinator@university.edu",
+      role: "STAFF",
+    },
+    "alice@university.edu": {
+      id: 3,
+      name: "Alice Student",
+      email: "alice@university.edu",
+      role: "STUDENT",
+      matricNo: "ST001",
+    },
+    "bob@university.edu": {
+      id: 4,
+      name: "Bob Student",
+      email: "bob@university.edu",
+      role: "STUDENT",
+      matricNo: "ST002",
+    },
+  };
+
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem("eventflow_user");
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error("Failed to parse saved user:", error);
-        localStorage.removeItem("eventflow_user");
-      }
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
-    // Check for demo login from URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const demoRole = urlParams.get("demo");
-
-    if (demoRole && ["admin", "organizer", "attendee"].includes(demoRole)) {
-      const demoUsers: Record<string, User> = {
-        admin: {
-          id: "1",
-          name: "Dr. Sarah Admin",
-          email: "admin@university.edu",
-          role: "admin",
-        },
-        organizer: {
-          id: "2",
-          name: "Mike Organizer",
-          email: "organizer@university.edu",
-          role: "organizer",
-        },
-        attendee: {
-          id: "3",
-          name: "Jane Student",
-          email: "student@university.edu",
-          role: "attendee",
-        },
-      };
-
-      const demoUser = demoUsers[demoRole];
-      if (demoUser) {
-        setUser(demoUser);
-        localStorage.setItem("eventflow_user", JSON.stringify(demoUser));
-        // Clean up URL
-        window.history.replaceState({}, "", window.location.pathname);
-      }
-    }
+    setIsLoading(false);
   }, []);
+  const login = async (email: string): Promise<boolean> => {
+    try {
+      // Try API first
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-  const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem("eventflow_user", JSON.stringify(userData));
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+        localStorage.setItem("currentUser", JSON.stringify(userData));
+        return true;
+      }
+    } catch (error) {
+      console.error("API login failed, using demo users:", error);
+    }
+
+    // Fallback to demo users
+    const userData = demoUsers[email];
+    if (userData) {
+      setUser(userData);
+      localStorage.setItem("currentUser", JSON.stringify(userData));
+      return true;
+    }
+    return false;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("eventflow_user");
+    localStorage.removeItem("currentUser");
   };
 
-  const hasRole = (role: UserRole | UserRole[]) => {
+  const hasRole = (role: string | string[]): boolean => {
     if (!user) return false;
     if (Array.isArray(role)) {
       return role.includes(user.role);
@@ -99,15 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        hasRole,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, logout, isLoading, hasRole }}>
       {children}
     </AuthContext.Provider>
   );
