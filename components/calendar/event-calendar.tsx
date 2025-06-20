@@ -71,20 +71,20 @@ export default function EventCalendar() {
   const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : [];
   return (
     <div className="bg-white">
-      {/* Compact calendar header */}
-      <div className="flex items-center justify-between mb-6">
+      {/* Delightful calendar header */}
+      <div className="flex items-center justify-between mb-6 group">
         <button
           onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-          className="text-lg text-gray-600 hover:text-gray-900 transition-colors"
+          className="text-lg text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 hover:-translate-x-1"
         >
           ←
         </button>
-        <h2 className="text-lg font-medium text-gray-900">
+        <h2 className="text-lg font-medium text-gray-900 transition-all duration-300 cursor-default group-hover:scale-105">
           {format(currentDate, "MMMM yyyy")}
         </h2>
         <button
           onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-          className="text-lg text-gray-600 hover:text-gray-900 transition-colors"
+          className="text-lg text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 hover:translate-x-1"
         >
           →
         </button>

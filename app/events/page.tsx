@@ -84,28 +84,35 @@ export default function EventsPage() {
   const canCreate = user.role === "ADMIN" || user.role === "STAFF";
   return (
     <div className="min-h-screen bg-white">
-      {/* Compact header */}
-      <header className="border-b border-gray-100">
+      {/* Delightful header */}
+      <header className="border-b border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push("/dashboard")}
-                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-sm text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-105 group"
               >
-                ← Dashboard
+                <span className="transition-all duration-300 group-hover:tracking-wider">
+                  ← Dashboard
+                </span>
               </button>
-              <h1 className="text-xl font-medium text-gray-900">Events</h1>
+              <div className="group cursor-default">
+                <h1 className="text-xl font-medium text-gray-900 transition-all duration-300 group-hover:scale-105">
+                  Events
+                </h1>
+                <div className="h-0.5 w-0 bg-gray-900 transition-all duration-500 group-hover:w-8"></div>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
-              {/* Filter tabs */}
+              {/* Enhanced filter tabs */}
               <div className="flex space-x-4">
                 <button
                   onClick={() => setFilter("approved")}
-                  className={`text-sm px-3 py-1 transition-colors ${
+                  className={`text-sm px-3 py-1 transition-all duration-300 hover:scale-105 ${
                     filter === "approved"
-                      ? "text-gray-900 bg-gray-100"
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "text-gray-900 bg-gray-100 shadow-sm"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   }`}
                 >
                   Approved
@@ -113,10 +120,10 @@ export default function EventsPage() {
                 {canApprove && (
                   <button
                     onClick={() => setFilter("pending")}
-                    className={`text-sm px-3 py-1 transition-colors ${
+                    className={`text-sm px-3 py-1 transition-all duration-300 hover:scale-105 ${
                       filter === "pending"
-                        ? "text-gray-900 bg-gray-100"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "text-gray-900 bg-gray-100 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                     }`}
                   >
                     Pending
@@ -124,10 +131,10 @@ export default function EventsPage() {
                 )}
                 <button
                   onClick={() => setFilter("all")}
-                  className={`text-sm px-3 py-1 transition-colors ${
+                  className={`text-sm px-3 py-1 transition-all duration-300 hover:scale-105 ${
                     filter === "all"
-                      ? "text-gray-900 bg-gray-100"
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "text-gray-900 bg-gray-100 shadow-sm"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   }`}
                 >
                   All
@@ -136,9 +143,11 @@ export default function EventsPage() {
               {canCreate && (
                 <button
                   onClick={() => router.push("/events/new")}
-                  className="bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-colors"
+                  className="bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-lg group"
                 >
-                  New Event
+                  <span className="transition-all duration-300 group-hover:tracking-wider">
+                    New Event
+                  </span>
                 </button>
               )}
             </div>

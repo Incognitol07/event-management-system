@@ -120,26 +120,42 @@ export default function NewEventPage() {
     .filter((word) => word.length > 0).length;
   return (
     <div className="min-h-screen bg-white">
-      {/* Compact header */}
-      <header className="border-b border-gray-100">
+      {/* Delightful header */}
+      <header className="border-b border-gray-100 bg-white">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => router.back()}
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-105 group"
             >
-              ← Back
+              <span className="transition-all duration-300 group-hover:tracking-wider">
+                ← Back
+              </span>
             </button>
-            <h1 className="text-xl font-medium text-gray-900">Create Event</h1>
+            <div className="group cursor-default">
+              <h1 className="text-xl font-medium text-gray-900 transition-all duration-300 group-hover:scale-105">
+                Create Event
+              </h1>
+              <div className="h-0.5 w-0 bg-gray-900 transition-all duration-500 group-hover:w-12"></div>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-6">
+        <div className="mb-4 text-center">
+          <p className="text-sm text-gray-600">
+            Let's bring your vision to life
+            <span className="inline-block ml-1 transition-transform duration-300 hover:rotate-12 hover:scale-110">
+              🎨
+            </span>
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+          <div className="group">
+            <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
               Event Title
             </label>
             <input
@@ -148,14 +164,13 @@ export default function NewEventPage() {
               required
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
               placeholder="Enter a clear, descriptive title"
             />
           </div>
-
           {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+          <div className="group">
+            <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
               Description
             </label>
             <textarea
@@ -164,22 +179,26 @@ export default function NewEventPage() {
               rows={4}
               value={formData.description}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors resize-none"
+              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 resize-none hover:border-gray-400 focus:scale-105"
               placeholder="Describe your event in detail..."
             />
             <div
-              className={`text-sm mt-1 ${
-                wordCount > 300 ? "text-red-600" : "text-gray-500"
+              className={`text-sm mt-1 transition-all duration-300 ${
+                wordCount > 300
+                  ? "text-red-600"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               {wordCount} / 300 words
+              {wordCount > 250 && wordCount <= 300 && (
+                <span className="ml-1 opacity-60">almost there! ✍️</span>
+              )}
             </div>
-          </div>
-
+          </div>{" "}
           {/* Date and Time */}
           <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
                 Date
               </label>
               <input
@@ -189,11 +208,11 @@ export default function NewEventPage() {
                 value={formData.date}
                 onChange={handleChange}
                 min={new Date().toISOString().split("T")[0]}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
                 Start Time
               </label>
               <input
@@ -202,11 +221,11 @@ export default function NewEventPage() {
                 required
                 value={formData.startTime}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
-              />
+                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
+              />{" "}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
                 End Time
               </label>
               <input
@@ -215,15 +234,14 @@ export default function NewEventPage() {
                 required
                 value={formData.endTime}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
               />
             </div>
           </div>
-
           {/* Venue and Capacity */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
                 Venue
               </label>
               <select
@@ -231,7 +249,7 @@ export default function NewEventPage() {
                 required
                 value={formData.venueId}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
               >
                 <option value="">Select a venue</option>
                 {venues.map((venue) => (
@@ -241,8 +259,8 @@ export default function NewEventPage() {
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
                 Expected Attendees
               </label>
               <input
@@ -252,22 +270,21 @@ export default function NewEventPage() {
                 min="1"
                 value={formData.capacity}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
                 placeholder="Number of attendees"
               />
             </div>
           </div>
-
           {/* Priority */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+          <div className="group">
+            <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
               Priority Level
             </label>
             <select
               name="priority"
               value={formData.priority}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors"
+              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
             >
               <option value="LOW">Low</option>
               <option value="NORMAL">Normal</option>
@@ -277,10 +294,9 @@ export default function NewEventPage() {
               )}
             </select>
           </div>
-
           {/* Memo */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+          <div className="group">
+            <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
               Approval Memo
             </label>
             <textarea
@@ -289,24 +305,30 @@ export default function NewEventPage() {
               rows={3}
               value={formData.memo}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-colors resize-none"
+              className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 resize-none hover:border-gray-400 focus:scale-105"
               placeholder="Provide justification for this event..."
             />
           </div>
-
           {error && (
             <div className="text-center py-2">
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm text-red-600 animate-pulse">{error}</p>
             </div>
           )}
-
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-between items-center pt-6">
+            <div className="text-sm text-gray-600">
+              Almost ready!
+              <span className="inline-block ml-1 transition-transform duration-300 hover:rotate-12">
+                🚀
+              </span>
+            </div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-gray-900 text-white px-6 py-2 text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="bg-gray-900 text-white px-6 py-2 text-sm font-medium hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 hover:scale-105 hover:shadow-lg group"
             >
-              {isSubmitting ? "Creating..." : "Create Event"}
+              <span className="transition-all duration-300 group-hover:tracking-wider">
+                {isSubmitting ? "Creating..." : "Create Event"}
+              </span>
             </button>
           </div>
         </form>
