@@ -2,19 +2,12 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import EventCalendar from "@/components/calendar/event-calendar";
 import { Calendar, Users, MapPin, Plus, LogOut } from "lucide-react";
 
 export default function Dashboard() {
   const { user, logout, isLoading } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login");
-    }
-  }, [user, isLoading, router]);
 
   if (isLoading) {
     return (

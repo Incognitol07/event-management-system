@@ -53,11 +53,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       matricNo: "ST002",
     },
   };
-
   useEffect(() => {
     const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const userData = JSON.parse(storedUser);
+      setUser(userData);
+      // Set cookie for middleware access
+      document.cookie = `currentUser=${JSON.stringify(
+        userData
+      )}; path=/; max-age=86400`; // 24 hours
     }
     setIsLoading(false);
   }, []);
@@ -69,30 +73,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
         localStorage.setItem("currentUser", JSON.stringify(userData));
+        // Set cookie for middleware access
+        document.cookie = `currentUser=${JSON.stringify(
+          userData
+        )}; path=/; max-age=86400`; // 24 hours
         return true;
       }
     } catch (error) {
       console.error("API login failed, using demo users:", error);
-    }
-
-    // Fallback to demo users
+    } // Fallback to demo users
     const userData = demoUsers[email];
     if (userData) {
       setUser(userData);
       localStorage.setItem("currentUser", JSON.stringify(userData));
+      // Set cookie for middleware access
+      document.cookie = `currentUser=${JSON.stringify(
+        userData
+      )}; path=/; max-age=86400`; // 24 hours
       return true;
     }
     return false;
   };
-
   const logout = () => {
     setUser(null);
     localStorage.removeItem("currentUser");
+    // Clear cookie
+    document.cookie =
+      "currentUser=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   };
 
   const hasRole = (role: string | string[]): boolean => {

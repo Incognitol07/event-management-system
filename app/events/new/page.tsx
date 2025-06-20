@@ -36,16 +36,6 @@ export default function NewEventPage() {
     memo: "",
     priority: "NORMAL" as "LOW" | "NORMAL" | "HIGH" | "EMERGENCY",
   });
-
-  useEffect(() => {
-    if (
-      !isLoading &&
-      (!user || (user.role !== "ADMIN" && user.role !== "STAFF"))
-    ) {
-      router.push("/dashboard");
-    }
-  }, [user, isLoading, router]);
-
   useEffect(() => {
     fetchVenues();
   }, []);
@@ -118,7 +108,6 @@ export default function NewEventPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -127,7 +116,7 @@ export default function NewEventPage() {
     );
   }
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "STAFF")) {
+  if (!user) {
     return null;
   }
 

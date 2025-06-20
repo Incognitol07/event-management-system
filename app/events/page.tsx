@@ -1,88 +1,97 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/lib/auth-context'
-import { format } from 'date-fns'
-import { Calendar, Clock, MapPin, Users, ArrowLeft, CheckCircle, XCircle, Plus } from 'lucide-react'
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { format } from "date-fns";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
+  Plus,
+} from "lucide-react";
 
 type Event = {
-  id: number
-  title: string
-  description: string
-  date: string
-  startTime: string
-  endTime: string
-  venue: { name: string; capacity: number }
-  capacity: number
-  priority: string
-  isApproved: boolean
-  createdBy: { name: string; role: string }
-}
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  venue: { name: string; capacity: number };
+  capacity: number;
+  priority: string;
+  isApproved: boolean;
+  createdBy: { name: string; role: string };
+};
 
 export default function EventsPage() {
-  const { user, isLoading } = useAuth()
-  const router = useRouter()
-  const [events, setEvents] = useState<Event[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved'>('approved')
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login')
-    }
-  }, [user, isLoading, router])
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "pending" | "approved">(
+    "approved"
+  );
 
   useEffect(() => {
     if (user) {
-      fetchEvents()
+      fetchEvents();
     }
-  }, [user, filter])
+  }, [user, filter]);
 
   const fetchEvents = async () => {
     try {
-      setLoading(true)
-      const response = await fetch('/api/events')
+      setLoading(true);
+      const response = await fetch("/api/events");
       if (response.ok) {
-        const data = await response.json()
-        let filteredEvents = data
-        
-        if (filter === 'approved') {
-          filteredEvents = data.filter((event: Event) => event.isApproved)
-        } else if (filter === 'pending') {
-          filteredEvents = data.filter((event: Event) => !event.isApproved)
+        const data = await response.json();
+        let filteredEvents = data;
+
+        if (filter === "approved") {
+          filteredEvents = data.filter((event: Event) => event.isApproved);
+        } else if (filter === "pending") {
+          filteredEvents = data.filter((event: Event) => !event.isApproved);
         }
-        
-        setEvents(filteredEvents)
+
+        setEvents(filteredEvents);
       }
     } catch (error) {
-      console.error('Failed to fetch events:', error)
+      console.error("Failed to fetch events:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const approveEvent = async (eventId: number) => {
-    if (user?.role !== 'ADMIN') return
-    
+    if (user?.role !== "ADMIN") return;
+
     try {
       const response = await fetch(`/api/events/${eventId}/approve`, {
-        method: 'PATCH',
-      })
+        method: "PATCH",
+      });
       if (response.ok) {
-        fetchEvents() // Refresh the list
+        fetchEvents(); // Refresh the list
       }
     } catch (error) {
-      console.error('Failed to approve event:', error)
+      console.error("Failed to approve event:", error);
     }
-  }
+  };
 
   if (isLoading || !user) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
-  const canCreateEvents = user.role === 'ADMIN' || user.role === 'STAFF'
-  const canApproveEvents = user.role === 'ADMIN'
+  const canCreateEvents = user.role === "ADMIN" || user.role === "STAFF";
+  const canApproveEvents = user.role === "ADMIN";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -90,7 +99,7 @@ export default function EventsPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push("/dashboard")}
               className="p-2 hover:bg-gray-100 rounded-lg"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -99,7 +108,7 @@ export default function EventsPage() {
           </div>
           {canCreateEvents && (
             <button
-              onClick={() => router.push('/events/new')}
+              onClick={() => router.push("/events/new")}
               className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
             >
               <Plus className="w-4 h-4" />
@@ -111,22 +120,22 @@ export default function EventsPage() {
         {/* Filter Tabs */}
         <div className="flex space-x-4 mb-6">
           <button
-            onClick={() => setFilter('approved')}
+            onClick={() => setFilter("approved")}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'approved' 
-                ? 'bg-indigo-600 text-white' 
-                : 'bg-white text-gray-700 hover:bg-gray-50'
+              filter === "approved"
+                ? "bg-indigo-600 text-white"
+                : "bg-white text-gray-700 hover:bg-gray-50"
             }`}
           >
             Approved Events
           </button>
           {canApproveEvents && (
             <button
-              onClick={() => setFilter('pending')}
+              onClick={() => setFilter("pending")}
               className={`px-4 py-2 rounded-lg ${
-                filter === 'pending' 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                filter === "pending"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
               Pending Approval
@@ -134,11 +143,11 @@ export default function EventsPage() {
           )}
           {canApproveEvents && (
             <button
-              onClick={() => setFilter('all')}
+              onClick={() => setFilter("all")}
               className={`px-4 py-2 rounded-lg ${
-                filter === 'all' 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                filter === "all"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
               All Events
@@ -155,23 +164,30 @@ export default function EventsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {events.map(event => (
+            {events.map((event) => (
               <div key={event.id} className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {event.title}
+                      </h3>
                       {event.isApproved ? (
                         <CheckCircle className="w-5 h-5 text-green-500" />
                       ) : (
                         <XCircle className="w-5 h-5 text-red-500" />
                       )}
-                      <span className={`px-2 py-1 text-xs rounded ${
-                        event.priority === 'EMERGENCY' ? 'bg-red-100 text-red-700' :
-                        event.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' :
-                        event.priority === 'NORMAL' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-700'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 text-xs rounded ${
+                          event.priority === "EMERGENCY"
+                            ? "bg-red-100 text-red-700"
+                            : event.priority === "HIGH"
+                            ? "bg-orange-100 text-orange-700"
+                            : event.priority === "NORMAL"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
                         {event.priority}
                       </span>
                     </div>
@@ -179,11 +195,15 @@ export default function EventsPage() {
                     <div className="flex items-center space-x-6 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <Calendar className="w-4 h-4" />
-                        <span>{format(new Date(event.date), 'MMM d, yyyy')}</span>
+                        <span>
+                          {format(new Date(event.date), "MMM d, yyyy")}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Clock className="w-4 h-4" />
-                        <span>{event.startTime} - {event.endTime}</span>
+                        <span>
+                          {event.startTime} - {event.endTime}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <MapPin className="w-4 h-4" />
@@ -213,5 +233,5 @@ export default function EventsPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
