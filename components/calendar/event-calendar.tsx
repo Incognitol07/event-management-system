@@ -11,14 +11,6 @@ import {
   addMonths,
   subMonths,
 } from "date-fns";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  MapPin,
-  Users,
-  AlertCircle,
-} from "lucide-react";
 
 type Event = {
   id: number;
@@ -70,21 +62,6 @@ export default function EventCalendar() {
   const monthEnd = endOfMonth(currentDate);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "EMERGENCY":
-        return "bg-red-500";
-      case "HIGH":
-        return "bg-orange-500";
-      case "NORMAL":
-        return "bg-blue-500";
-      case "LOW":
-        return "bg-gray-500";
-      default:
-        return "bg-blue-500";
-    }
-  };
-
   const getEventsForDate = (date: Date) => {
     return events.filter(
       (event) => isSameDay(event.date, date) && event.isApproved
@@ -92,35 +69,33 @@ export default function EventCalendar() {
   };
 
   const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : [];
-
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="bg-white">
+      {/* Compact calendar header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Event Calendar</h2>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <h3 className="text-lg font-semibold">
-            {format(currentDate, "MMMM yyyy")}
-          </h3>
-          <button
-            onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-            className="p-2 hover:bg-gray-100 rounded-lg"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        </div>
+        <button
+          onClick={() => setCurrentDate(subMonths(currentDate, 1))}
+          className="text-lg text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          ←
+        </button>
+        <h2 className="text-lg font-medium text-gray-900">
+          {format(currentDate, "MMMM yyyy")}
+        </h2>
+        <button
+          onClick={() => setCurrentDate(addMonths(currentDate, 1))}
+          className="text-lg text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          →
+        </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-4">
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-px bg-gray-200 border border-gray-200">
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
           <div
             key={day}
-            className="p-2 text-center text-sm font-medium text-gray-500"
+            className="bg-gray-50 p-2 text-center text-xs font-medium text-gray-700"
           >
             {day}
           </div>
@@ -135,28 +110,42 @@ export default function EventCalendar() {
               key={day.toISOString()}
               onClick={() => setSelectedDate(day)}
               className={`
-                min-h-[100px] p-2 border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors
-                ${isSelected ? "bg-blue-50 border-blue-300" : ""}
-                ${!isSameMonth(day, currentDate) ? "opacity-50" : ""}
+                min-h-[80px] p-2 bg-white cursor-pointer hover:bg-gray-50 transition-colors
+                ${isSelected ? "bg-gray-900 text-white" : ""}
+                ${!isSameMonth(day, currentDate) ? "opacity-30" : ""}
               `}
             >
-              <div className="text-sm font-medium mb-1">{format(day, "d")}</div>
+              <div
+                className={`text-sm font-medium mb-1 ${
+                  isSelected ? "text-white" : "text-gray-900"
+                }`}
+              >
+                {format(day, "d")}
+              </div>
               <div className="space-y-1">
-                {dayEvents.slice(0, 3).map((event) => (
+                {dayEvents.slice(0, 2).map((event) => (
                   <div
                     key={event.id}
-                    className={`text-xs px-2 py-1 rounded text-white ${getPriorityColor(
-                      event.priority
-                    )}`}
+                    className={`text-xs px-1 py-0.5 rounded ${
+                      isSelected
+                        ? "bg-white text-gray-900"
+                        : event.priority === "EMERGENCY"
+                        ? "bg-red-500 text-white"
+                        : "bg-gray-100 text-gray-700"
+                    }`}
                   >
-                    {event.title.length > 15
-                      ? `${event.title.slice(0, 15)}...`
+                    {event.title.length > 10
+                      ? `${event.title.slice(0, 10)}...`
                       : event.title}
                   </div>
                 ))}
-                {dayEvents.length > 3 && (
-                  <div className="text-xs text-gray-500">
-                    +{dayEvents.length - 3} more
+                {dayEvents.length > 2 && (
+                  <div
+                    className={`text-xs ${
+                      isSelected ? "text-white" : "text-gray-500"
+                    }`}
+                  >
+                    +{dayEvents.length - 2}
                   </div>
                 )}
               </div>
@@ -165,60 +154,48 @@ export default function EventCalendar() {
         })}
       </div>
 
+      {/* Selected date events */}
       {selectedDate && (
-        <div className="mt-6 border-t pt-6">
-          <h3 className="text-lg font-semibold mb-4">
-            Events for {format(selectedDate, "MMMM d, yyyy")}
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <h3 className="text-base font-medium text-gray-900 mb-4">
+            {format(selectedDate, "MMMM d, yyyy")}
           </h3>
           {selectedDateEvents.length === 0 ? (
-            <p className="text-gray-500">No events scheduled for this day.</p>
+            <p className="text-sm text-gray-600">No events scheduled</p>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {selectedDateEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="border border-gray-200 rounded-lg p-4"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h4 className="font-semibold text-gray-900">
-                          {event.title}
-                        </h4>
-                        <span
-                          className={`px-2 py-1 text-xs rounded text-white ${getPriorityColor(
-                            event.priority
-                          )}`}
-                        >
-                          {event.priority}
-                        </span>
-                        {event.priority === "EMERGENCY" && (
-                          <AlertCircle className="w-4 h-4 text-red-500" />
-                        )}
-                      </div>
-                      <p className="text-gray-600 text-sm mb-3">
-                        {event.description}
-                      </p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
-                          <span>
-                            {event.startTime} - {event.endTime}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <MapPin className="w-4 h-4" />
-                          <span>{event.venue.name}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Users className="w-4 h-4" />
-                          <span>{event.capacity} capacity</span>
-                        </div>
-                      </div>
-                    </div>
+                <div key={event.id} className="border border-gray-200 p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <h4 className="text-sm font-medium text-gray-900">
+                      {event.title}
+                    </h4>
+                    {event.priority === "EMERGENCY" && (
+                      <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                        Emergency
+                      </span>
+                    )}
                   </div>
-                  <div className="mt-3 text-xs text-gray-400">
-                    Organized by {event.createdBy.name} ({event.createdBy.role})
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {event.description}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                    <div>
+                      <span className="font-medium">Time:</span>{" "}
+                      {event.startTime} – {event.endTime}
+                    </div>
+                    <div>
+                      <span className="font-medium">Venue:</span>{" "}
+                      {event.venue.name}
+                    </div>
+                    <div>
+                      <span className="font-medium">Capacity:</span>{" "}
+                      {event.capacity}
+                    </div>
+                    <div>
+                      <span className="font-medium">By:</span>{" "}
+                      {event.createdBy.name}
+                    </div>
                   </div>
                 </div>
               ))}
