@@ -203,7 +203,7 @@ export default function NewEventPage() {
           await Promise.all(resourcePromises);
         }
 
-        router.push("/events");
+        router.push("/organizer");
       } else {
         const errorData = await eventResponse.json();
         setError(errorData.error || "Failed to create event");
@@ -329,8 +329,8 @@ export default function NewEventPage() {
             {formData.isRecurring && (
               <div className="space-y-3 pl-7 animate-in slide-in-from-top-2 duration-300">
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                  <div className="group">
+                    <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
                       Repeat
                     </label>
                     <select
@@ -344,25 +344,31 @@ export default function NewEventPage() {
                             | "MONTHLY",
                         }))
                       }
-                      className="w-full px-2 py-1 text-sm border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400"
+                      className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
                     >
                       <option value="DAILY">Daily</option>
                       <option value="WEEKLY">Weekly</option>
                       <option value="MONTHLY">Monthly</option>
                     </select>
-                  </div>{" "}
-                  <DatePicker
-                    label="End Date (Optional)"
-                    date={formData.recurrenceEnd}
-                    onChange={(value) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        recurrenceEnd: value,
-                      }))
-                    }
-                    minDate={formData.date}
-                    placeholder="No end date"
-                  />
+                  </div>
+                  <div className="group">
+                    <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
+                      End Date (Optional)
+                    </label>
+                    <DatePicker
+                      label=""
+                      date={formData.recurrenceEnd}
+                      onChange={(value) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          recurrenceEnd: value,
+                        }))
+                      }
+                      minDate={formData.date}
+                      placeholder="No end date"
+                      className="w-full"
+                    />
+                  </div>
                 </div>
                 <div className="text-xs text-gray-500">
                   {formData.recurrenceType === "DAILY" &&

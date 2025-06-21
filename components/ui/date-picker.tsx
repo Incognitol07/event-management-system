@@ -131,16 +131,17 @@ export default function DatePicker({
   };
 
   const calendar = generateCalendar();
-
   return (
     <div className={`group relative ${className}`} ref={dateRef}>
-      <label className="block text-xs font-medium text-gray-700 mb-1">
-        {label}
-      </label>
+      {label && (
+        <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
+          {label}
+        </label>
+      )}
       <button
         type="button"
         onClick={() => setShowDatePicker(!showDatePicker)}
-        className="w-full px-2 py-1 text-sm border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 text-left bg-white flex items-center justify-between"
+        className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105 text-left bg-white flex items-center justify-between"
       >
         <span className={date ? "text-gray-900" : "text-gray-500"}>
           {formatDate(date)}
