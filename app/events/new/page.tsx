@@ -94,9 +94,20 @@ export default function NewEventPage() {
       setIsSubmitting(false);
       return;
     }
-
     if (!formData.capacity || parseInt(formData.capacity) < 1) {
       setError("Valid expected attendees count is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate capacity against venue capacity
+    const selectedVenue = venues.find(
+      (v) => v.id.toString() === formData.venueId
+    );
+    if (selectedVenue && parseInt(formData.capacity) > selectedVenue.capacity) {
+      setError(
+        `Event capacity (${formData.capacity}) cannot exceed venue capacity (${selectedVenue.capacity})`
+      );
       setIsSubmitting(false);
       return;
     }
@@ -251,21 +262,48 @@ export default function NewEventPage() {
                   </option>
                 ))}
               </select>
-            </div>
+            </div>{" "}
             <div className="group">
               <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
                 Expected Attendees
+                {formData.venueId && (
+                  <span className="text-xs text-gray-500 ml-2">
+                    (Max:{" "}
+                    {venues.find((v) => v.id.toString() === formData.venueId)
+                      ?.capacity || 0}
+                    )
+                  </span>
+                )}
               </label>
               <input
                 type="number"
                 name="capacity"
                 required
                 min="1"
+                max={
+                  formData.venueId
+                    ? venues.find((v) => v.id.toString() === formData.venueId)
+                        ?.capacity
+                    : undefined
+                }
                 value={formData.capacity}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
                 placeholder="Number of attendees"
               />
+              {formData.venueId &&
+                formData.capacity &&
+                parseInt(formData.capacity) >
+                  (venues.find((v) => v.id.toString() === formData.venueId)
+                    ?.capacity || 0) && (
+                  <div className="text-red-600 text-xs mt-1">
+                    Capacity exceeds venue limit of{" "}
+                    {
+                      venues.find((v) => v.id.toString() === formData.venueId)
+                        ?.capacity
+                    }
+                  </div>
+                )}
             </div>
           </div>{" "}
           {/* Category and Priority */}

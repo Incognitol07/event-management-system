@@ -134,17 +134,23 @@ export default function EventCalendar() {
                 }`}
               >
                 {format(day, "d")}
-              </div>              <div className="space-y-1">
+              </div>
+              <div className="space-y-1">
                 {dayEvents.slice(0, 2).map((event) => (
                   <div
                     key={event.id}
-                    className={`text-xs px-1 py-0.5 rounded text-white ${
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = `/events/${event.id}`;
+                    }}
+                    className={`text-xs px-1 py-0.5 rounded text-white cursor-pointer hover:opacity-80 transition-opacity ${
                       isSelected
                         ? "bg-white text-gray-900"
                         : event.priority === "EMERGENCY"
                         ? "bg-red-500"
                         : getCategoryColor(event.category)
                     }`}
+                    title={`${event.title} - Click to view details`}
                   >
                     {event.title.length > 10
                       ? `${event.title.slice(0, 10)}...`
@@ -177,11 +183,24 @@ export default function EventCalendar() {
           ) : (
             <div className="space-y-3">
               {selectedDateEvents.map((event) => (
-                <div key={event.id} className="border border-gray-200 p-4">
+                <div
+                  key={event.id}
+                  className="border border-gray-200 p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => (window.location.href = `/events/${event.id}`)}
+                >
                   <div className="flex items-start justify-between mb-2">
-                    <h4 className="text-sm font-medium text-gray-900">
-                      {event.title}
-                    </h4>
+                    <div className="flex items-center space-x-2">
+                      <h4 className="text-sm font-medium text-gray-900">
+                        {event.title}
+                      </h4>
+                      <span
+                        className={`text-xs px-2 py-1 rounded text-white ${getCategoryColor(
+                          event.category
+                        )}`}
+                      >
+                        {event.category.replace("_", " ")}
+                      </span>
+                    </div>
                     {event.priority === "EMERGENCY" && (
                       <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
                         Emergency
@@ -208,6 +227,9 @@ export default function EventCalendar() {
                       <span className="font-medium">By:</span>{" "}
                       {event.createdBy.name}
                     </div>
+                  </div>
+                  <div className="mt-2 text-xs text-blue-600 hover:text-blue-800">
+                    Click to view details →
                   </div>
                 </div>
               ))}

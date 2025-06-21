@@ -43,10 +43,29 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
-      // Validate required fields
+    const data = await request.json()    // Validate required fields
     if (!data.title || !data.date || !data.startTime || !data.endTime || !data.venueId || !data.createdById) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    // Get venue details to check capacity
+    const venue = await prisma.venue.findUnique({
+      where: { id: data.venueId }
+    })
+
+    if (!venue) {
+      return NextResponse.json({ error: 'Venue not found' }, { status: 404 })
+    }
+
+    // Check if event capacity exceeds venue capacity
+    if (data.capacity > venue.capacity) {
+      return NextResponse.json(
+        { 
+          error: `Event capacity (${data.capacity}) cannot exceed venue capacity (${venue.capacity})`,
+          venueCapacity: venue.capacity 
+        },
+        { status: 400 }
+      )
     }
 
     // Check for time/venue conflicts
@@ -87,7 +106,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
     const event = await prisma.event.create({
       data: {
         title: data.title,
@@ -99,6 +117,8 @@ export async function POST(request: NextRequest) {
         capacity: data.capacity,
         memo: data.memo || '',
         priority: data.priority || 'NORMAL',
+        category: data.category || 'ACADEMIC',
+        department: data.department || null,
         isApproved: data.isApproved || false,
         createdById: data.createdById,
       },
