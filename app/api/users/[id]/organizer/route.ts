@@ -12,11 +12,20 @@ export async function GET(
 
     if (isNaN(userId)) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
-    }
-
-    const events = await prisma.event.findMany({
+    }    const events = await prisma.event.findMany({
       where: {
-        createdById: userId,
+        OR: [
+          // Events where user is the creator (backward compatibility)
+          { createdById: userId },
+          // Events where user is listed as an organizer (new system)
+          {
+            organizers: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
       },
       include: {
         venue: true,
@@ -25,6 +34,21 @@ export async function GET(
             id: true,
             name: true,
             role: true,
+          },
+        },
+        organizers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+          orderBy: {
+            role: 'asc', // PRIMARY_ORGANIZER first
           },
         },
         rsvps: {

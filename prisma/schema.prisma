@@ -18,9 +18,10 @@ model User {
   matricNo String?
 
   // Relationships
-  organizedEvents Event[]     @relation("EventOrganizer")
-  attendedEvents  EventRSVP[]
-  feedback        Feedback[]
+  organizedEvents   Event[]          @relation("EventOrganizer")
+  coOrganizedEvents EventOrganizer[] // Many-to-many relationship for co-organizing
+  attendedEvents    EventRSVP[]
+  feedback          Feedback[]
 
   @@map("users")
 }
@@ -29,6 +30,11 @@ enum Role {
   ADMIN
   ORGANIZER
   STUDENT
+}
+
+enum OrganizerRole {
+  PRIMARY_ORGANIZER // The main organizer (usually the creator)
+  CO_ORGANIZER // Additional organizers who can manage the event
 }
 
 // Simplified Venue model
@@ -45,7 +51,7 @@ model Venue {
 
 // Core Event model with essential fields
 model Event {
-  id          Int             @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
   description String // Max 300 words enforced in app logic
   date        DateTime
@@ -54,21 +60,40 @@ model Event {
   venueId     Int
   capacity    Int
   memo        String
-  isApproved  Boolean         @default(false)
-  priority    Priority        @default(NORMAL)
-  category    EventCategory   @default(ACADEMIC)
+  isApproved  Boolean       @default(false)
+  priority    Priority      @default(NORMAL)
+  category    EventCategory @default(ACADEMIC)
   department  String? // Optional department/organization
-  createdById Int
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  createdById Int // Primary organizer (for backward compatibility)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
   // Relationships
-  venue       Venue           @relation(fields: [venueId], references: [id])
-  createdBy   User            @relation("EventOrganizer", fields: [createdById], references: [id])
-  rsvps       EventRSVP[]
-  feedback    Feedback[]
-  resources   EventResource[]
+  venue      Venue            @relation(fields: [venueId], references: [id])
+  createdBy  User             @relation("EventOrganizer", fields: [createdById], references: [id])
+  organizers EventOrganizer[] // Many-to-many relationship for all organizers
+  rsvps      EventRSVP[]
+  feedback   Feedback[]
+  resources  EventResource[]
 
   @@map("events")
+}
+
+// Junction table for Event-Organizer many-to-many relationship
+model EventOrganizer {
+  id      Int           @id @default(autoincrement())
+  eventId Int
+  userId  Int
+  role    OrganizerRole @default(CO_ORGANIZER)
+  addedAt DateTime      @default(now())
+  addedBy Int? // Who added this organizer
+
+  // Relationships
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@map("event_organizers")
 }
 
 enum Priority {

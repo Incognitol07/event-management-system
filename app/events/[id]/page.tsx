@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import ProtectedHeader from "@/components/layout/protected-header";
 import { ResourceSelector } from "@/components/resources/resource-selector";
 import { ResourceView } from "@/components/resources/resource-view";
+import OrganizerManagement from "@/components/events/organizer-management";
 
 type Event = {
   id: number;
@@ -21,6 +22,17 @@ type Event = {
   priority: string;
   isApproved: boolean;
   createdBy: { name: string; role: string };
+  organizers?: Array<{
+    id: number;
+    userId: number;
+    role: "PRIMARY_ORGANIZER" | "CO_ORGANIZER";
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      role: string;
+    };
+  }>;
   rsvps: Array<{
     id: number;
     status: string;
@@ -299,12 +311,16 @@ export default function EventDetailPage() {
                   existingAllocations={resourceAllocations}
                 />
               </div>
-            )}
+            )}{" "}
             {/* Resource View for organizers and staff */}
             {user.role !== "ADMIN" && (
               <ResourceView
                 eventId={parseInt(eventId)}
-                isOrganizer={event.createdBy.name === user.name}
+                isOrganizer={
+                  event.createdBy.name === user.name ||
+                  event.organizers?.some((org) => org.userId === user?.id) ||
+                  false
+                }
               />
             )}
           </div>
@@ -326,7 +342,6 @@ export default function EventDetailPage() {
                     {event.startTime} – {event.endTime}
                   </div>
                 </div>
-
                 <div>
                   <div className="text-sm text-gray-600">Venue</div>
                   <div className="font-medium text-gray-900">
@@ -336,7 +351,6 @@ export default function EventDetailPage() {
                     Capacity: {event.venue.capacity} people
                   </div>
                 </div>
-
                 <div>
                   <div className="text-sm text-gray-600">Event Capacity</div>
                   <div className="font-medium text-gray-900">
@@ -347,9 +361,23 @@ export default function EventDetailPage() {
                       Event is full
                     </div>
                   )}
-                </div>
+                </div>{" "}
               </div>
             </div>
+
+            {/* Organizer Management - Show for organizers and admins */}
+            {(user?.role === "ADMIN" ||
+              event.organizers?.some((org) => org.userId === user?.id) ||
+              event.createdBy.name === user?.name) && (
+              <div className="border border-gray-200 p-6">
+                <OrganizerManagement
+                  eventId={event.id}
+                  currentUserId={user?.id || 0}
+                  onOrganizerAdded={fetchEvent}
+                  onOrganizerRemoved={fetchEvent}
+                />
+              </div>
+            )}
 
             {/* RSVP card */}
             {canRSVP && (

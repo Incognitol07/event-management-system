@@ -26,6 +26,21 @@ export async function GET(request: NextRequest) {
       include: {
         venue: true,
         createdBy: true,
+        organizers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+          orderBy: {
+            role: 'asc', // PRIMARY_ORGANIZER first, then CO_ORGANIZER
+          },
+        },
         resources: {
           include: {
             resource: {
@@ -113,8 +128,7 @@ export async function POST(request: NextRequest) {
         { error: 'Description cannot exceed 300 words' },
         { status: 400 }
       )
-    }
-    const event = await prisma.event.create({
+    }    const event = await prisma.event.create({
       data: {
         title: data.title,
         description: data.description || '',
@@ -129,10 +143,29 @@ export async function POST(request: NextRequest) {
         department: data.department || null,
         isApproved: data.isApproved || false,
         createdById: data.createdById,
+        // Create the primary organizer relationship
+        organizers: {
+          create: {
+            userId: data.createdById,
+            role: 'PRIMARY_ORGANIZER',
+          },
+        },
       },
       include: {
         venue: true,
         createdBy: true,
+        organizers: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+              },
+            },
+          },
+        },
       },
     })
 
