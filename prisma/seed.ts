@@ -1,13 +1,14 @@
-import { PrismaClient, Role, Priority } from '../generated/prisma'
+import { PrismaClient, Role, Priority, ResourceCategory } from '../generated/prisma'
 
 const prisma = new PrismaClient()
 
-async function main() {
-  // Clear existing data
+async function main() {  // Clear existing data
   await prisma.feedback.deleteMany()
   await prisma.eventRSVP.deleteMany()
+  await prisma.eventResource.deleteMany()
   await prisma.event.deleteMany()
   await prisma.venue.deleteMany()
+  await prisma.resource.deleteMany()
   await prisma.user.deleteMany()
 
   // Create users
@@ -59,11 +60,83 @@ async function main() {
       capacity: 50,
     },
   })
-
   const venue3 = await prisma.venue.create({
     data: {
       name: 'Library Hall',
       capacity: 200,
+    },
+  })
+
+  // Create resources
+  const projector = await prisma.resource.create({
+    data: {
+      name: 'HD Projector',
+      description: 'High-definition projector suitable for large auditoriums',
+      category: ResourceCategory.AUDIO_VISUAL,
+      totalCount: 5,
+    },
+  })
+
+  const microphone = await prisma.resource.create({
+    data: {
+      name: 'Wireless Microphone',
+      description: 'Professional wireless microphone system',
+      category: ResourceCategory.AUDIO_VISUAL,
+      totalCount: 10,
+    },
+  })
+
+  const tables = await prisma.resource.create({
+    data: {
+      name: 'Round Tables',
+      description: 'Round tables that seat 8 people each',
+      category: ResourceCategory.FURNITURE,
+      totalCount: 20,
+    },
+  })
+
+  const chairs = await prisma.resource.create({
+    data: {
+      name: 'Plastic Chairs',
+      description: 'Standard plastic chairs for events',
+      category: ResourceCategory.FURNITURE,
+      totalCount: 200,
+    },
+  })
+
+  const avTechnician = await prisma.resource.create({
+    data: {
+      name: 'AV Technician',
+      description: 'Audio-visual technical support specialist',
+      category: ResourceCategory.TECHNICAL_STAFF,
+      totalCount: 3,
+    },
+  })
+
+  const securityGuard = await prisma.resource.create({
+    data: {
+      name: 'Security Personnel',
+      description: 'Trained security guards for event safety',
+      category: ResourceCategory.SECURITY,
+      totalCount: 8,
+    },
+  })
+
+  const transportBus = await prisma.resource.create({
+    data: {
+      name: 'University Bus',
+      description: '50-seater bus for off-campus events',
+      category: ResourceCategory.TRANSPORTATION,
+      totalCount: 2,
+    },
+  })
+
+  const cateringTables = await prisma.resource.create({
+    data: {
+      name: 'Catering Tables',
+      description: 'Long tables for food service and buffet setup',
+      category: ResourceCategory.CATERING,
+      totalCount: 15,
     },
   })
 
@@ -132,12 +205,82 @@ async function main() {
       status: 'ACCEPTED',
     },
   })
-
   await prisma.eventRSVP.create({
     data: {
       eventId: event2.id,
       userId: student2.id,
       status: 'ACCEPTED',
+    },
+  })
+
+  // Create resource allocations
+  // Science Fair resources
+  await prisma.eventResource.create({
+    data: {
+      eventId: event1.id,
+      resourceId: projector.id,
+      quantityNeeded: 2,
+      status: 'APPROVED',
+      notes: 'For main presentation and demo stations',
+    },
+  })
+
+  await prisma.eventResource.create({
+    data: {
+      eventId: event1.id,
+      resourceId: microphone.id,
+      quantityNeeded: 3,
+      status: 'APPROVED',
+    },
+  })
+
+  await prisma.eventResource.create({
+    data: {
+      eventId: event1.id,
+      resourceId: tables.id,
+      quantityNeeded: 10,
+      status: 'APPROVED',
+      notes: 'For project displays',
+    },
+  })
+
+  await prisma.eventResource.create({
+    data: {
+      eventId: event1.id,
+      resourceId: securityGuard.id,
+      quantityNeeded: 2,
+      status: 'APPROVED',
+      notes: 'For crowd control and security',
+    },
+  })
+
+  // Study Group resources
+  await prisma.eventResource.create({
+    data: {
+      eventId: event2.id,
+      resourceId: projector.id,
+      quantityNeeded: 1,
+      status: 'APPROVED',
+    },
+  })
+
+  // Faculty Meeting resources
+  await prisma.eventResource.create({
+    data: {
+      eventId: event3.id,
+      resourceId: microphone.id,
+      quantityNeeded: 1,
+      status: 'APPROVED',
+    },
+  })
+
+  await prisma.eventResource.create({
+    data: {
+      eventId: event3.id,
+      resourceId: avTechnician.id,
+      quantityNeeded: 1,
+      status: 'APPROVED',
+      notes: 'For video conferencing setup',
     },
   })
 

@@ -45,7 +45,7 @@ model Venue {
 
 // Core Event model with essential fields
 model Event {
-  id          Int           @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   title       String
   description String // Max 300 words enforced in app logic
   date        DateTime
@@ -54,19 +54,19 @@ model Event {
   venueId     Int
   capacity    Int
   memo        String
-  isApproved  Boolean       @default(false)
-  priority    Priority      @default(NORMAL)
-  category    EventCategory @default(ACADEMIC)
+  isApproved  Boolean         @default(false)
+  priority    Priority        @default(NORMAL)
+  category    EventCategory   @default(ACADEMIC)
   department  String? // Optional department/organization
   createdById Int
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   // Relationships
-  venue     Venue       @relation(fields: [venueId], references: [id])
-  createdBy User        @relation("EventOrganizer", fields: [createdById], references: [id])
-  rsvps     EventRSVP[]
-  feedback  Feedback[]
+  venue       Venue           @relation(fields: [venueId], references: [id])
+  createdBy   User            @relation("EventOrganizer", fields: [createdById], references: [id])
+  rsvps       EventRSVP[]
+  feedback    Feedback[]
+  resources   EventResource[]
 
   @@map("events")
 }
@@ -125,4 +125,58 @@ model Feedback {
 
   @@unique([eventId, userId])
   @@map("feedback")
+}
+
+// Resource management models
+model Resource {
+  id          Int              @id @default(autoincrement())
+  name        String
+  description String?
+  category    ResourceCategory
+  totalCount  Int              @default(1) // Total available quantity
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relationships
+  eventResources EventResource[]
+
+  @@map("resources")
+}
+
+enum ResourceCategory {
+  AUDIO_VISUAL // Projectors, microphones, speakers, laptops
+  FURNITURE // Tables, chairs, staging platforms
+  TECHNICAL_STAFF // IT support, AV technicians
+  CATERING // Catering equipment, serving tables
+  TRANSPORTATION // Buses, vans
+  SECURITY // Security personnel
+  OTHER // Miscellaneous resources
+}
+
+// Junction table for Event-Resource many-to-many relationship
+model EventResource {
+  id             Int            @id @default(autoincrement())
+  eventId        Int
+  resourceId     Int
+  quantityNeeded Int            @default(1)
+  status         ResourceStatus @default(PENDING)
+  approvedAt     DateTime?
+  approvedBy     Int? // Admin who approved the resource
+  notes          String? // Additional notes about resource allocation
+  createdAt      DateTime       @default(now())
+
+  // Relationships
+  event    Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, resourceId])
+  @@map("event_resources")
+}
+
+enum ResourceStatus {
+  PENDING // Awaiting approval
+  APPROVED // Resource allocated
+  DENIED // Request denied
+  CANCELLED // Request cancelled
 }

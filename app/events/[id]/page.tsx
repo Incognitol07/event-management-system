@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { format } from "date-fns";
 import ProtectedHeader from "@/components/layout/protected-header";
+import { ResourceSelector } from "@/components/resources/resource-selector";
 
 type Event = {
   id: number;
@@ -40,6 +41,24 @@ type Feedback = {
   user: { id: number; name: string };
 };
 
+type ResourceAllocation = {
+  id: number;
+  resourceId: number;
+  quantityNeeded: number;
+  status: string;
+  notes?: string;
+  resource: {
+    id: number;
+    name: string;
+    description?: string;
+    category: string;
+    totalCount: number;
+    availableCount: number;
+    allocatedCount: number;
+    isActive: boolean;
+  };
+};
+
 export default function EventDetailPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -52,13 +71,15 @@ export default function EventDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
+  const [resourceAllocations, setResourceAllocations] = useState<
+    ResourceAllocation[]
+  >([]);
 
   useEffect(() => {
     if (user && eventId) {
       fetchEvent();
     }
   }, [user, eventId]);
-
   const fetchEvent = async () => {
     try {
       setLoading(true);
@@ -73,7 +94,8 @@ export default function EventDetailPage() {
         );
         if (existingRSVP) {
           setUserRSVP(existingRSVP);
-        }
+        } // Fetch resource allocations
+        fetchResourceAllocations();
       } else if (response.status === 404) {
         router.push("/events");
       }
@@ -126,8 +148,23 @@ export default function EventDetailPage() {
     }
   };
 
+  const fetchResourceAllocations = async () => {
+    if (!eventId) return;
+
+    try {
+      const response = await fetch(`/api/events/${eventId}/resources`);
+      if (response.ok) {
+        const data = await response.json();
+        setResourceAllocations(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch resource allocations:", error);
+    }
+  };
+
   useEffect(() => {
     fetchFeedback();
+    fetchResourceAllocations();
   }, [eventId]);
 
   if (isLoading || loading) {
@@ -244,6 +281,7 @@ export default function EventDetailPage() {
                     Confirmed Attendees ({acceptedRSVPs.length})
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {" "}
                     {acceptedRSVPs.map((rsvp) => (
                       <div key={rsvp.id} className="text-sm text-gray-700">
                         {rsvp.user.name}
@@ -252,6 +290,20 @@ export default function EventDetailPage() {
                   </div>
                 </div>
               )}
+
+            {/* Resource Management (for event organizers, staff, and admins) */}
+            {(user.role === "ADMIN" ||
+              user.role === "STAFF" ||
+              event.createdBy.name === user.name) && (
+              <div>
+                <ResourceSelector
+                  eventId={parseInt(eventId)}
+                  eventDate={event.date}
+                  onResourceAllocated={fetchResourceAllocations}
+                  existingAllocations={resourceAllocations}
+                />
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}

@@ -101,13 +101,21 @@ export default function Dashboard() {
                   className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   → View All Events
-                </button>
+                </button>{" "}
                 <button
                   onClick={() => (window.location.href = "/locations")}
                   className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   → Manage Venues
                 </button>
+                {(user.role === "ADMIN" || user.role === "STAFF") && (
+                  <button
+                    onClick={() => (window.location.href = "/resources")}
+                    className="block w-full text-left text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    → Manage Resources
+                  </button>
+                )}
               </div>
             </div>
 
