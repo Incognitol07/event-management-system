@@ -41,7 +41,8 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
               }`}
             >
               Events
-            </button>            <button
+            </button>{" "}
+            <button
               onClick={() => router.push("/locations")}
               className={`text-sm transition-all duration-300 hover:scale-105 ${
                 currentPage === "venues"

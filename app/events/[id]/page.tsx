@@ -32,6 +32,14 @@ type RSVPData = {
   status: string;
 };
 
+type Feedback = {
+  id: number;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  user: { id: number; name: string };
+};
+
 export default function EventDetailPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -42,6 +50,8 @@ export default function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const [userRSVP, setUserRSVP] = useState<RSVPData | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
+  const [loadingFeedback, setLoadingFeedback] = useState(false);
 
   useEffect(() => {
     if (user && eventId) {
@@ -98,6 +108,27 @@ export default function EventDetailPage() {
       setSubmitting(false);
     }
   };
+
+  const fetchFeedback = async () => {
+    if (!eventId) return;
+
+    setLoadingFeedback(true);
+    try {
+      const response = await fetch(`/api/events/${eventId}/feedback`);
+      if (response.ok) {
+        const data = await response.json();
+        setFeedback(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch feedback:", error);
+    } finally {
+      setLoadingFeedback(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeedback();
+  }, [eventId]);
 
   if (isLoading || loading) {
     return (
@@ -351,6 +382,51 @@ export default function EventDetailPage() {
                 )}
               </div>
             )}
+
+            {/* Feedback section */}
+            <div className="border border-gray-200 p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                Feedback
+              </h3>
+
+              {loadingFeedback ? (
+                <div className="animate-pulse space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                </div>
+              ) : feedback.length > 0 ? (
+                <div className="space-y-4">
+                  {feedback.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-4 border border-gray-200 rounded space-y-2"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-sm text-gray-600">
+                          {item.user.name} -{" "}
+                          {format(new Date(item.createdAt), "MMMM d, yyyy")}
+                        </div>
+                        <div className="text-sm font-medium text-gray-900">
+                          Rating: {item.rating}
+                        </div>
+                      </div>
+                      {item.comment && (
+                        <div className="text-gray-700">{item.comment}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">
+                  No feedback yet. Be the first to{" "}
+                  <span className="font-medium text-gray-900">
+                    provide feedback
+                  </span>
+                  !
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>

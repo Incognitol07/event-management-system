@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import ProtectedHeader from "@/components/layout/protected-header";
+import DateTimePicker from "@/components/ui/datetime-picker";
 
 type Venue = {
   id: number;
@@ -45,11 +46,53 @@ export default function NewEventPage() {
       console.error("Failed to fetch venues:", error);
     }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
+
+    // Validate required fields
+    if (!formData.title.trim()) {
+      setError("Event title is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      setError("Event description is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.date) {
+      setError("Event date is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.startTime) {
+      setError("Start time is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.endTime) {
+      setError("End time is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.venueId) {
+      setError("Venue selection is required");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.capacity || parseInt(formData.capacity) < 1) {
+      setError("Valid expected attendees count is required");
+      setIsSubmitting(false);
+      return;
+    }
 
     // Validate word count (300 words max)
     const wordCount = formData.description.trim().split(/\s+/).length;
@@ -93,7 +136,6 @@ export default function NewEventPage() {
       setIsSubmitting(false);
     }
   };
-
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -101,6 +143,13 @@ export default function NewEventPage() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateTimeChange = (
+    field: "date" | "startTime" | "endTime",
+    value: string
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   if (isLoading) {
@@ -122,9 +171,7 @@ export default function NewEventPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <ProtectedHeader
-        currentPage="events"
-      />
+      <ProtectedHeader currentPage="events" />
 
       <main className="max-w-4xl mx-auto px-6 py-6">
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -143,7 +190,6 @@ export default function NewEventPage() {
               placeholder="Enter a clear, descriptive title"
             />
           </div>
-
           {/* Description */}
           <div className="group">
             <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
@@ -170,52 +216,14 @@ export default function NewEventPage() {
                 <span className="ml-1 opacity-60">almost there! ✍️</span>
               )}
             </div>
-          </div>
-
+          </div>{" "}
           {/* Date and Time */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="group">
-              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
-                Date
-              </label>
-              <input
-                type="date"
-                name="date"
-                required
-                value={formData.date}
-                onChange={handleChange}
-                min={new Date().toISOString().split("T")[0]}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
-              />
-            </div>
-            <div className="group">
-              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
-                Start Time
-              </label>
-              <input
-                type="time"
-                name="startTime"
-                required
-                value={formData.startTime}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
-              />
-            </div>
-            <div className="group">
-              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
-                End Time
-              </label>
-              <input
-                type="time"
-                name="endTime"
-                required
-                value={formData.endTime}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
-              />
-            </div>
-          </div>
-
+          <DateTimePicker
+            date={formData.date}
+            startTime={formData.startTime}
+            endTime={formData.endTime}
+            onChange={handleDateTimeChange}
+          />
           {/* Venue and Capacity */}
           <div className="grid grid-cols-2 gap-4">
             <div className="group">
@@ -253,7 +261,6 @@ export default function NewEventPage() {
               />
             </div>
           </div>
-
           {/* Priority */}
           <div className="group">
             <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
@@ -273,7 +280,6 @@ export default function NewEventPage() {
               )}
             </select>
           </div>
-
           {/* Memo */}
           <div className="group">
             <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
@@ -289,13 +295,11 @@ export default function NewEventPage() {
               placeholder="Provide justification for this event..."
             />
           </div>
-
           {error && (
             <div className="text-center py-2">
               <p className="text-sm text-red-600 animate-pulse">{error}</p>
             </div>
           )}
-
           <div className="flex justify-between items-center pt-6">
             <div className="text-sm text-gray-600">
               Almost ready!

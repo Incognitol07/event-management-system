@@ -38,8 +38,12 @@ export default function MyEventsPage() {
   const [rsvps, setRSVPs] = useState<EventRSVP[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"upcoming" | "past" | "all">("upcoming");
-  const [feedbackForm, setFeedbackForm] = useState<Record<number, FeedbackForm>>({});
-  const [submittingFeedback, setSubmittingFeedback] = useState<Record<number, boolean>>({});
+  const [feedbackForm, setFeedbackForm] = useState<
+    Record<number, FeedbackForm>
+  >({});
+  const [submittingFeedback, setSubmittingFeedback] = useState<
+    Record<number, boolean>
+  >({});
 
   useEffect(() => {
     if (user) {
@@ -66,7 +70,7 @@ export default function MyEventsPage() {
     if (!feedbackForm[eventId] || feedbackForm[eventId].rating === 0) return;
 
     try {
-      setSubmittingFeedback(prev => ({ ...prev, [eventId]: true }));
+      setSubmittingFeedback((prev) => ({ ...prev, [eventId]: true }));
       const response = await fetch(`/api/events/${eventId}/feedback`, {
         method: "POST",
         headers: {
@@ -83,20 +87,23 @@ export default function MyEventsPage() {
         // Refresh the events to show the submitted feedback
         fetchMyEvents();
         // Clear the form
-        setFeedbackForm(prev => ({ ...prev, [eventId]: { rating: 0, comment: "" } }));
+        setFeedbackForm((prev) => ({
+          ...prev,
+          [eventId]: { rating: 0, comment: "" },
+        }));
       }
     } catch (error) {
       console.error("Failed to submit feedback:", error);
     } finally {
-      setSubmittingFeedback(prev => ({ ...prev, [eventId]: false }));
+      setSubmittingFeedback((prev) => ({ ...prev, [eventId]: false }));
     }
   };
 
   const initializeFeedbackForm = (eventId: number) => {
     if (!feedbackForm[eventId]) {
-      setFeedbackForm(prev => ({
+      setFeedbackForm((prev) => ({
         ...prev,
-        [eventId]: { rating: 0, comment: "" }
+        [eventId]: { rating: 0, comment: "" },
       }));
     }
   };
@@ -116,7 +123,8 @@ export default function MyEventsPage() {
   const now = new Date();
   const filteredRSVPs = rsvps.filter((rsvp) => {
     const eventDate = new Date(rsvp.event.date);
-    if (filter === "upcoming") return eventDate >= now && rsvp.status === "ACCEPTED";
+    if (filter === "upcoming")
+      return eventDate >= now && rsvp.status === "ACCEPTED";
     if (filter === "past") return eventDate < now && rsvp.status === "ACCEPTED";
     return rsvp.status === "ACCEPTED";
   });
@@ -172,8 +180,11 @@ export default function MyEventsPage() {
           <div className="text-center py-12">
             <div className="text-4xl mb-4 opacity-60">📅</div>
             <p className="text-lg text-gray-600">
-              {filter === "upcoming" ? "No upcoming events" : 
-               filter === "past" ? "No past events" : "No registered events"}
+              {filter === "upcoming"
+                ? "No upcoming events"
+                : filter === "past"
+                ? "No past events"
+                : "No registered events"}
             </p>
             <p className="text-sm text-gray-500 mt-2">
               {filter === "upcoming" && "Register for events to see them here"}
@@ -185,15 +196,17 @@ export default function MyEventsPage() {
               const eventDate = new Date(rsvp.event.date);
               const isPastEvent = eventDate < now;
               const hasFeedback = rsvp.feedback !== null;
-              
+
               return (
                 <div key={rsvp.id} className="border border-gray-200 p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <h3 
+                        <h3
                           className="text-lg font-medium text-gray-900 cursor-pointer hover:text-gray-700"
-                          onClick={() => router.push(`/events/${rsvp.event.id}`)}
+                          onClick={() =>
+                            router.push(`/events/${rsvp.event.id}`)
+                          }
                         >
                           {rsvp.event.title}
                         </h3>
@@ -231,9 +244,13 @@ export default function MyEventsPage() {
                     <div className="border-t border-gray-100 pt-4">
                       {hasFeedback ? (
                         <div>
-                          <h4 className="text-sm font-medium text-gray-900 mb-2">Your Feedback</h4>
+                          <h4 className="text-sm font-medium text-gray-900 mb-2">
+                            Your Feedback
+                          </h4>
                           <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-sm text-gray-600">Rating:</span>
+                            <span className="text-sm text-gray-600">
+                              Rating:
+                            </span>
                             <div className="flex space-x-1">
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <span
@@ -276,16 +293,17 @@ export default function MyEventsPage() {
                                     type="button"
                                     onClick={() => {
                                       initializeFeedbackForm(rsvp.event.id);
-                                      setFeedbackForm(prev => ({
+                                      setFeedbackForm((prev) => ({
                                         ...prev,
                                         [rsvp.event.id]: {
                                           ...prev[rsvp.event.id],
-                                          rating: star
-                                        }
+                                          rating: star,
+                                        },
                                       }));
                                     }}
                                     className={`text-lg transition-colors ${
-                                      star <= (feedbackForm[rsvp.event.id]?.rating || 0)
+                                      star <=
+                                      (feedbackForm[rsvp.event.id]?.rating || 0)
                                         ? "text-yellow-400 hover:text-yellow-500"
                                         : "text-gray-300 hover:text-gray-400"
                                     }`}
@@ -302,15 +320,17 @@ export default function MyEventsPage() {
                                 Comment (optional)
                               </label>
                               <textarea
-                                value={feedbackForm[rsvp.event.id]?.comment || ""}
+                                value={
+                                  feedbackForm[rsvp.event.id]?.comment || ""
+                                }
                                 onChange={(e) => {
                                   initializeFeedbackForm(rsvp.event.id);
-                                  setFeedbackForm(prev => ({
+                                  setFeedbackForm((prev) => ({
                                     ...prev,
                                     [rsvp.event.id]: {
                                       ...prev[rsvp.event.id],
-                                      comment: e.target.value
-                                    }
+                                      comment: e.target.value,
+                                    },
                                   }));
                                 }}
                                 className="w-full px-3 py-2 text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 resize-none"
@@ -323,12 +343,14 @@ export default function MyEventsPage() {
                             <button
                               onClick={() => submitFeedback(rsvp.event.id)}
                               disabled={
-                                !feedbackForm[rsvp.event.id]?.rating || 
+                                !feedbackForm[rsvp.event.id]?.rating ||
                                 submittingFeedback[rsvp.event.id]
                               }
                               className="text-sm bg-gray-900 text-white px-4 py-2 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              {submittingFeedback[rsvp.event.id] ? "Submitting..." : "Submit Feedback"}
+                              {submittingFeedback[rsvp.event.id]
+                                ? "Submitting..."
+                                : "Submit Feedback"}
                             </button>
                           </div>
                         </div>
