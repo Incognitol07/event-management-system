@@ -271,10 +271,11 @@ export default function OrganizerDashboard() {
                 {events.slice(0, 3).map((event) => (
                   <div
                     key={event.id}
-                    className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
+                    className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-gray-50 transition-colors rounded px-2"
+                    onClick={() => router.push(`/events/${event.id}`)}
                   >
                     <div>
-                      <h4 className="font-medium text-gray-900">
+                      <h4 className="font-medium text-gray-900 hover:text-gray-700 transition-colors">
                         {event.title}
                       </h4>
                       <p className="text-sm text-gray-600">
@@ -289,9 +290,12 @@ export default function OrganizerDashboard() {
                         )}`}
                       >
                         {event.isApproved ? "Approved" : "Pending"}
-                      </span>
+                      </span>{" "}
                       <button
-                        onClick={() => router.push(`/events/${event.id}`)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/events/${event.id}`);
+                        }}
                         className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
                       >
                         View →
@@ -310,12 +314,20 @@ export default function OrganizerDashboard() {
             {events.map((event) => (
               <div
                 key={event.id}
-                className="bg-white border border-gray-200 rounded-lg p-6 transition-all duration-300 hover:shadow-sm"
+                className="bg-white border border-gray-200 rounded-lg p-6 transition-all duration-300 hover:shadow-sm cursor-pointer"
+                onClick={() => router.push(`/events/${event.id}`)}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-lg font-medium text-gray-900">
+                      {" "}
+                      <h3
+                        className="text-lg font-medium text-gray-900 hover:text-gray-700 transition-colors cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/events/${event.id}`);
+                        }}
+                      >
                         {event.title}
                       </h3>
                       <div className="flex items-center space-x-2">
@@ -371,19 +383,23 @@ export default function OrganizerDashboard() {
                       attendees
                     </span>
                     <span>{event.feedback?.length || 0} reviews</span>
-                  </div>
+                  </div>{" "}
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => router.push(`/events/${event.id}`)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/events/${event.id}`);
+                      }}
                       className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                     >
                       View Details
                     </button>
                     {!event.isApproved && (
                       <button
-                        onClick={() =>
-                          setCancelModal({ isOpen: true, eventId: event.id })
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCancelModal({ isOpen: true, eventId: event.id });
+                        }}
                         className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors"
                       >
                         Cancel Request
