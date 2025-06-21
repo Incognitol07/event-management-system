@@ -384,10 +384,10 @@ export default function EventDetailPage() {
             )}
 
             {/* Feedback section */}
-            <div className="border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <div>
+              <h2 className="text-xl font-medium text-gray-900 mb-4">
                 Feedback
-              </h3>
+              </h2>
 
               {loadingFeedback ? (
                 <div className="animate-pulse space-y-4">
@@ -396,35 +396,32 @@ export default function EventDetailPage() {
                   <div className="h-4 bg-gray-200 rounded w-5/6"></div>
                 </div>
               ) : feedback.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {feedback.map((item) => (
-                    <div
-                      key={item.id}
-                      className="p-4 border border-gray-200 rounded space-y-2"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-sm text-gray-600">
-                          {item.user.name} -{" "}
-                          {format(new Date(item.createdAt), "MMMM d, yyyy")}
+                    <div key={item.id} className="border border-gray-200 p-6">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {item.user.name}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {format(new Date(item.createdAt), "MMMM d, yyyy")}
+                          </div>
                         </div>
                         <div className="text-sm font-medium text-gray-900">
-                          Rating: {item.rating}
+                          Rating: {item.rating}/5
                         </div>
                       </div>
                       {item.comment && (
-                        <div className="text-gray-700">{item.comment}</div>
+                        <div className="text-gray-700 leading-relaxed">
+                          {item.comment}
+                        </div>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-500 text-sm">
-                  No feedback yet. Be the first to{" "}
-                  <span className="font-medium text-gray-900">
-                    provide feedback
-                  </span>
-                  !
-                </div>
+                <div className="text-gray-600">No feedback yet.</div>
               )}
             </div>
           </div>
