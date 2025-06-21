@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 // GET /api/resources/[id] - Get specific resource with allocations
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;
@@ -77,7 +77,7 @@ export async function GET(
 // PUT /api/resources/[id] - Update resource
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;
@@ -138,7 +138,7 @@ export async function PUT(
 // DELETE /api/resources/[id] - Delete resource
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;

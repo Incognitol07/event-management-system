@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 // POST /api/events/[id]/resources - Allocate resources to an event
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;
@@ -108,7 +108,7 @@ export async function POST(
 // GET /api/events/[id]/resources - Get all resources for an event
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;

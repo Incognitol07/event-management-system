@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 // GET /api/events/[id]/organizers - Get all organizers for an event
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;
@@ -43,7 +43,7 @@ export async function GET(
 // POST /api/events/[id]/organizers - Add a co-organizer to an event
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;
@@ -123,7 +123,7 @@ export async function POST(
 // DELETE /api/events/[id]/organizers?userId=123 - Remove a co-organizer from an event
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }>}
 ) {
   try {
     const awaitedParams = await params;

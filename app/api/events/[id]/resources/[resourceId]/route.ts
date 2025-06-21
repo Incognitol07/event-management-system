@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 // PUT /api/events/[id]/resources/[resourceId]/approve - Approve resource allocation
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string; resourceId: string } }
+  { params }: { params: Promise<{ id: string; resourceId: string }> }
 ) {
   try {
     const awaitedParams = await params;
@@ -48,7 +48,7 @@ export async function PUT(
 // PATCH /api/events/[id]/resources/[resourceId] - Deny resource allocation
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; resourceId: string } }
+  { params }: { params: Promise<{ id: string; resourceId: string }> }
 ) {
   try {
     const awaitedParams = await params;
@@ -88,7 +88,7 @@ export async function PATCH(
 // DELETE /api/events/[id]/resources/[resourceId] - Remove resource allocation
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; resourceId: string } }
+  { params }: { params: Promise<{ id: string; resourceId: string }> }
 ) {
   try {
     const awaitedParams = await params;
