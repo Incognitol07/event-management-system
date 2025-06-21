@@ -16,6 +16,8 @@ type Event = {
   venue: { name: string; capacity: number };
   capacity: number;
   priority: string;
+  category: string;
+  department?: string;
   isApproved: boolean;
   createdBy: { name: string; role: string };
 };
@@ -28,6 +30,7 @@ export default function EventsPage() {
   const [filter, setFilter] = useState<"all" | "pending" | "approved">(
     "approved"
   );
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   useEffect(() => {
     if (user) {
@@ -49,11 +52,10 @@ export default function EventsPage() {
       setLoading(false);
     }
   };
-
   const approveEvent = async (eventId: number) => {
     try {
       const response = await fetch(`/api/events/${eventId}/approve`, {
-        method: "POST",
+        method: "PATCH",
       });
       if (response.ok) {
         fetchEvents();
@@ -61,6 +63,32 @@ export default function EventsPage() {
     } catch (error) {
       console.error("Failed to approve event:", error);
     }
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      ACADEMIC: "bg-blue-100 text-blue-700",
+      SPIRITUAL: "bg-purple-100 text-purple-700",
+      SOCIAL: "bg-green-100 text-green-700",
+      STUDENT_ORG: "bg-yellow-100 text-yellow-700",
+      SPORTS: "bg-orange-100 text-orange-700",
+      CULTURAL: "bg-pink-100 text-pink-700",
+    };
+    return (
+      colors[category as keyof typeof colors] || "bg-gray-100 text-gray-700"
+    );
+  };
+
+  const getCategoryLabel = (category: string) => {
+    const labels = {
+      ACADEMIC: "Academic",
+      SPIRITUAL: "Spiritual",
+      SOCIAL: "Social",
+      STUDENT_ORG: "Student Org",
+      SPORTS: "Sports",
+      CULTURAL: "Cultural",
+    };
+    return labels[category as keyof typeof labels] || category;
   };
 
   if (isLoading || loading) {
@@ -74,11 +102,18 @@ export default function EventsPage() {
   if (!user) {
     return null;
   }
-
   const filteredEvents = events.filter((event) => {
-    if (filter === "approved") return event.isApproved;
-    if (filter === "pending") return !event.isApproved;
-    return true;
+    // Filter by approval status
+    let statusMatch = true;
+    if (filter === "approved") statusMatch = event.isApproved;
+    if (filter === "pending") statusMatch = !event.isApproved;
+
+    // Filter by category
+    let categoryMatch = true;
+    if (categoryFilter !== "all")
+      categoryMatch = event.category === categoryFilter;
+
+    return statusMatch && categoryMatch;
   });
 
   const canApprove = user.role === "ADMIN";
@@ -105,40 +140,61 @@ export default function EventsPage() {
                 New Event
               </button>
             )}
-          </div>
-
+          </div>{" "}
           {/* Filter tabs */}
-          <div className="flex space-x-4 border-b border-gray-200">
-            <button
-              onClick={() => setFilter("approved")}
-              className={`text-sm px-3 py-2 transition-all duration-300 ${
-                filter === "approved"
-                  ? "border-b-2 border-gray-900 font-medium text-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Approved
-            </button>
-            <button
-              onClick={() => setFilter("pending")}
-              className={`text-sm px-3 py-2 transition-all duration-300 ${
-                filter === "pending"
-                  ? "border-b-2 border-gray-900 font-medium text-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              Pending
-            </button>
-            <button
-              onClick={() => setFilter("all")}
-              className={`text-sm px-3 py-2 transition-all duration-300 ${
-                filter === "all"
-                  ? "border-b-2 border-gray-900 font-medium text-gray-900"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              All
-            </button>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setFilter("approved")}
+                className={`text-sm px-3 py-2 transition-all duration-300 ${
+                  filter === "approved"
+                    ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Approved
+              </button>
+              <button
+                onClick={() => setFilter("pending")}
+                className={`text-sm px-3 py-2 transition-all duration-300 ${
+                  filter === "pending"
+                    ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Pending
+              </button>
+              <button
+                onClick={() => setFilter("all")}
+                className={`text-sm px-3 py-2 transition-all duration-300 ${
+                  filter === "all"
+                    ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                All
+              </button>
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700">
+                Category:
+              </label>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="text-sm border border-gray-200 px-3 py-1 focus:border-gray-900 focus:outline-none transition-all duration-300"
+              >
+                <option value="all">All Categories</option>
+                <option value="ACADEMIC">Academic</option>
+                <option value="SPIRITUAL">Spiritual</option>
+                <option value="SOCIAL">Social</option>
+                <option value="STUDENT_ORG">Student Organization</option>
+                <option value="SPORTS">Sports</option>
+                <option value="CULTURAL">Cultural</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -156,11 +212,19 @@ export default function EventsPage() {
                 onClick={() => router.push(`/events/${event.id}`)}
               >
                 <div className="flex justify-between items-start mb-3">
+                  {" "}
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="text-lg font-medium text-gray-900">
                         {event.title}
                       </h3>
+                      <span
+                        className={`text-xs px-2 py-1 rounded ${getCategoryColor(
+                          event.category
+                        )}`}
+                      >
+                        {getCategoryLabel(event.category)}
+                      </span>
                       {event.priority === "EMERGENCY" && (
                         <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
                           Emergency
@@ -187,9 +251,8 @@ export default function EventsPage() {
                       Approve
                     </button>
                   )}
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
+                </div>{" "}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
                   <div>
                     <div className="font-medium text-gray-900">
                       {format(new Date(event.date), "MMM d, yyyy")}
@@ -210,6 +273,14 @@ export default function EventsPage() {
                     </div>
                     <div>{event.createdBy.role}</div>
                   </div>
+                  {event.department && (
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        Department
+                      </div>
+                      <div>{event.department}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

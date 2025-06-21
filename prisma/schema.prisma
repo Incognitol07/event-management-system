@@ -1,4 +1,4 @@
-// Simplified Event Management System - Core Features Only
+// Event Management System
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -45,7 +45,7 @@ model Venue {
 
 // Core Event model with essential fields
 model Event {
-  id          Int      @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
   description String // Max 300 words enforced in app logic
   date        DateTime
@@ -54,11 +54,13 @@ model Event {
   venueId     Int
   capacity    Int
   memo        String
-  isApproved  Boolean  @default(false)
-  priority    Priority @default(NORMAL)
+  isApproved  Boolean       @default(false)
+  priority    Priority      @default(NORMAL)
+  category    EventCategory @default(ACADEMIC)
+  department  String? // Optional department/organization
   createdById Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   // Relationships
   venue     Venue       @relation(fields: [venueId], references: [id])
@@ -74,6 +76,16 @@ enum Priority {
   NORMAL
   HIGH
   EMERGENCY
+}
+
+enum EventCategory {
+  ACADEMIC
+  SPIRITUAL
+  SOCIAL
+  STUDENT_ORG
+  SPORTS
+  CULTURAL
+  ADMINISTRATIVE
 }
 
 // Simplified RSVP system

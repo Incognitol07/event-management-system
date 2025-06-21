@@ -44,8 +44,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
-    
-    // Validate required fields
+      // Validate required fields
     if (!data.title || !data.date || !data.startTime || !data.endTime || !data.venueId || !data.createdById) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }

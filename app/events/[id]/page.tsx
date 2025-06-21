@@ -193,7 +193,7 @@ export default function EventDetailPage() {
                     const response = await fetch(
                       `/api/events/${eventId}/approve`,
                       {
-                        method: "POST",
+                        method: "PATCH",
                       }
                     );
                     if (response.ok) {

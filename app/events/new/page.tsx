@@ -18,7 +18,6 @@ export default function NewEventPage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -29,6 +28,14 @@ export default function NewEventPage() {
     capacity: "",
     memo: "",
     priority: "NORMAL" as "LOW" | "NORMAL" | "HIGH" | "EMERGENCY",
+    category: "ACADEMIC" as
+      | "ACADEMIC"
+      | "SPIRITUAL"
+      | "SOCIAL"
+      | "STUDENT_ORG"
+      | "SPORTS"
+      | "CULTURAL",
+    department: "",
   });
 
   useEffect(() => {
@@ -260,25 +267,59 @@ export default function NewEventPage() {
                 placeholder="Number of attendees"
               />
             </div>
+          </div>{" "}
+          {/* Category and Priority */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
+                Event Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
+              >
+                <option value="ACADEMIC">Academic</option>
+                <option value="SPIRITUAL">Spiritual</option>
+                <option value="SOCIAL">Social</option>
+                <option value="STUDENT_ORG">Student Organization</option>
+                <option value="SPORTS">Sports</option>
+                <option value="CULTURAL">Cultural</option>
+              </select>
+            </div>
+            <div className="group">
+              <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
+                Priority Level
+              </label>
+              <select
+                name="priority"
+                value={formData.priority}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
+              >
+                <option value="LOW">Low</option>
+                <option value="NORMAL">Normal</option>
+                <option value="HIGH">High</option>
+                {user?.role === "ADMIN" && (
+                  <option value="EMERGENCY">Emergency</option>
+                )}
+              </select>
+            </div>
           </div>
-          {/* Priority */}
+          {/* Department */}
           <div className="group">
             <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
-              Priority Level
+              Department/Organization (Optional)
             </label>
-            <select
-              name="priority"
-              value={formData.priority}
+            <input
+              type="text"
+              name="department"
+              value={formData.department}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
-            >
-              <option value="LOW">Low</option>
-              <option value="NORMAL">Normal</option>
-              <option value="HIGH">High</option>
-              {user?.role === "ADMIN" && (
-                <option value="EMERGENCY">Emergency</option>
-              )}
-            </select>
+              placeholder="e.g., Computer Science, Student Affairs, etc."
+            />
           </div>
           {/* Memo */}
           <div className="group">

@@ -22,6 +22,8 @@ type Event = {
   venue: { name: string; capacity: number };
   capacity: number;
   priority: "LOW" | "NORMAL" | "HIGH" | "EMERGENCY";
+  category: string;
+  department?: string;
   isApproved: boolean;
   createdBy: { name: string; role: string };
 };
@@ -35,7 +37,6 @@ export default function EventCalendar() {
   useEffect(() => {
     fetchEvents();
   }, [currentDate]);
-
   const fetchEvents = async () => {
     try {
       setIsLoading(true);
@@ -56,6 +57,18 @@ export default function EventCalendar() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      ACADEMIC: "bg-blue-500",
+      SPIRITUAL: "bg-purple-500",
+      SOCIAL: "bg-green-500",
+      STUDENT_ORG: "bg-yellow-500",
+      SPORTS: "bg-orange-500",
+      CULTURAL: "bg-pink-500",
+    };
+    return colors[category as keyof typeof colors] || "bg-gray-500";
   };
 
   const monthStart = startOfMonth(currentDate);
@@ -121,17 +134,16 @@ export default function EventCalendar() {
                 }`}
               >
                 {format(day, "d")}
-              </div>
-              <div className="space-y-1">
+              </div>              <div className="space-y-1">
                 {dayEvents.slice(0, 2).map((event) => (
                   <div
                     key={event.id}
-                    className={`text-xs px-1 py-0.5 rounded ${
+                    className={`text-xs px-1 py-0.5 rounded text-white ${
                       isSelected
                         ? "bg-white text-gray-900"
                         : event.priority === "EMERGENCY"
-                        ? "bg-red-500 text-white"
-                        : "bg-gray-100 text-gray-700"
+                        ? "bg-red-500"
+                        : getCategoryColor(event.category)
                     }`}
                   >
                     {event.title.length > 10
