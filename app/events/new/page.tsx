@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import ProtectedHeader from "@/components/layout/protected-header";
 
 type Venue = {
   id: number;
@@ -118,40 +119,17 @@ export default function NewEventPage() {
     .trim()
     .split(/\s+/)
     .filter((word) => word.length > 0).length;
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Delightful header */}
-      <header className="border-b border-gray-100 bg-white">
-        <div className="max-w-4xl mx-auto px-6 py-4">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => router.back()}
-              className="text-sm text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-105 group"
-            >
-              <span className="transition-all duration-300 group-hover:tracking-wider">
-                ← Back
-              </span>
-            </button>
-            <div className="group cursor-default">
-              <h1 className="text-xl font-medium text-gray-900 transition-all duration-300 group-hover:scale-105">
-                Create Event
-              </h1>
-              <div className="h-0.5 w-0 bg-gray-900 transition-all duration-500 group-hover:w-12"></div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <ProtectedHeader
+        title="Create Event"
+        subtitle="Let's bring your vision to life 🎨"
+        backTo="/events"
+        backLabel="Events"
+      />
 
       <main className="max-w-4xl mx-auto px-6 py-6">
-        <div className="mb-4 text-center">
-          <p className="text-sm text-gray-600">
-            Let's bring your vision to life
-            <span className="inline-block ml-1 transition-transform duration-300 hover:rotate-12 hover:scale-110">
-              🎨
-            </span>
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
           <div className="group">
@@ -168,6 +146,7 @@ export default function NewEventPage() {
               placeholder="Enter a clear, descriptive title"
             />
           </div>
+
           {/* Description */}
           <div className="group">
             <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
@@ -194,7 +173,8 @@ export default function NewEventPage() {
                 <span className="ml-1 opacity-60">almost there! ✍️</span>
               )}
             </div>
-          </div>{" "}
+          </div>
+
           {/* Date and Time */}
           <div className="grid grid-cols-3 gap-4">
             <div className="group">
@@ -222,7 +202,7 @@ export default function NewEventPage() {
                 value={formData.startTime}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
-              />{" "}
+              />
             </div>
             <div className="group">
               <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
@@ -238,6 +218,7 @@ export default function NewEventPage() {
               />
             </div>
           </div>
+
           {/* Venue and Capacity */}
           <div className="grid grid-cols-2 gap-4">
             <div className="group">
@@ -275,6 +256,7 @@ export default function NewEventPage() {
               />
             </div>
           </div>
+
           {/* Priority */}
           <div className="group">
             <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
@@ -289,11 +271,12 @@ export default function NewEventPage() {
               <option value="LOW">Low</option>
               <option value="NORMAL">Normal</option>
               <option value="HIGH">High</option>
-              {user.role === "ADMIN" && (
+              {user?.role === "ADMIN" && (
                 <option value="EMERGENCY">Emergency</option>
               )}
             </select>
           </div>
+
           {/* Memo */}
           <div className="group">
             <label className="block text-sm font-medium text-gray-900 mb-2 transition-all duration-300 group-hover:text-gray-700">
@@ -309,11 +292,13 @@ export default function NewEventPage() {
               placeholder="Provide justification for this event..."
             />
           </div>
+
           {error && (
             <div className="text-center py-2">
               <p className="text-sm text-red-600 animate-pulse">{error}</p>
             </div>
           )}
+
           <div className="flex justify-between items-center pt-6">
             <div className="text-sm text-gray-600">
               Almost ready!

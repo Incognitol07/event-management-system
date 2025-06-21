@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { format } from "date-fns";
+import ProtectedHeader from "@/components/layout/protected-header";
 
 type Event = {
   id: number;
@@ -84,78 +85,63 @@ export default function EventsPage() {
   const canCreate = user.role === "ADMIN" || user.role === "STAFF";
   return (
     <div className="min-h-screen bg-white">
-      {/* Delightful header */}
-      <header className="border-b border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
+      <ProtectedHeader currentPage="events" />
+
+      <main className="max-w-6xl mx-auto px-6 py-6">
+        {/* Page header with title and actions */}
+        <div className="mb-8">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-2xl font-light text-gray-900">Events</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Manage and view all events
+              </p>
+            </div>
+            {canCreate && (
               <button
-                onClick={() => router.push("/dashboard")}
-                className="text-sm text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-105 group"
+                onClick={() => router.push("/events/new")}
+                className="bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-all duration-300 hover:scale-105"
               >
-                <span className="transition-all duration-300 group-hover:tracking-wider">
-                  ← Dashboard
-                </span>
+                New Event
               </button>
-              <div className="group cursor-default">
-                <h1 className="text-xl font-medium text-gray-900 transition-all duration-300 group-hover:scale-105">
-                  Events
-                </h1>
-                <div className="h-0.5 w-0 bg-gray-900 transition-all duration-500 group-hover:w-8"></div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              {/* Enhanced filter tabs */}
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => setFilter("approved")}
-                  className={`text-sm px-3 py-1 transition-all duration-300 hover:scale-105 ${
-                    filter === "approved"
-                      ? "text-gray-900 bg-gray-100 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
-                >
-                  Approved
-                </button>
-                {canApprove && (
-                  <button
-                    onClick={() => setFilter("pending")}
-                    className={`text-sm px-3 py-1 transition-all duration-300 hover:scale-105 ${
-                      filter === "pending"
-                        ? "text-gray-900 bg-gray-100 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    }`}
-                  >
-                    Pending
-                  </button>
-                )}
-                <button
-                  onClick={() => setFilter("all")}
-                  className={`text-sm px-3 py-1 transition-all duration-300 hover:scale-105 ${
-                    filter === "all"
-                      ? "text-gray-900 bg-gray-100 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
-                >
-                  All
-                </button>
-              </div>
-              {canCreate && (
-                <button
-                  onClick={() => router.push("/events/new")}
-                  className="bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-lg group"
-                >
-                  <span className="transition-all duration-300 group-hover:tracking-wider">
-                    New Event
-                  </span>
-                </button>
-              )}
-            </div>
+            )}
+          </div>
+
+          {/* Filter tabs */}
+          <div className="flex space-x-4 border-b border-gray-200">
+            <button
+              onClick={() => setFilter("approved")}
+              className={`text-sm px-3 py-2 transition-all duration-300 ${
+                filter === "approved"
+                  ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Approved
+            </button>
+            <button
+              onClick={() => setFilter("pending")}
+              className={`text-sm px-3 py-2 transition-all duration-300 ${
+                filter === "pending"
+                  ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Pending
+            </button>
+            <button
+              onClick={() => setFilter("all")}
+              className={`text-sm px-3 py-2 transition-all duration-300 ${
+                filter === "all"
+                  ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              All
+            </button>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-6">
         {filteredEvents.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-lg text-gray-600">No events found</p>
