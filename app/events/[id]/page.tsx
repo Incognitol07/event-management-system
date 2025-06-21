@@ -200,23 +200,23 @@ export default function EventDetailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <ProtectedHeader currentPage="events" />
-
-      <main className="max-w-4xl mx-auto px-6 py-6">
+      <ProtectedHeader currentPage="events" />{" "}
+      <main className="max-w-5xl mx-auto px-4 py-4">
         {/* Back button */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-600 hover:text-gray-900 mb-6 flex items-center space-x-2"
+          className="text-sm text-gray-600 hover:text-gray-900 mb-4 flex items-center space-x-2"
         >
           <span>←</span>
           <span>Back to Events</span>
         </button>
 
         {/* Event header */}
-        <div className="mb-8">
-          <div className="flex items-start justify-between mb-4">
+        <div className="mb-6">
+          {" "}
+          <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
+              <div className="flex items-center space-x-3 mb-1">
                 <h1 className="text-3xl font-light text-gray-900">
                   {event.title}
                 </h1>
@@ -260,13 +260,13 @@ export default function EventDetailPage() {
             )}
           </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Main content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Description */}
+          <div className="lg:col-span-2 space-y-5">
+            {" "}
+            {/* Description */}{" "}
             <div>
-              <h2 className="text-xl font-medium text-gray-900 mb-4">
+              <h2 className="text-xl font-medium text-gray-900 mb-2">
                 Description
               </h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
@@ -276,7 +276,7 @@ export default function EventDetailPage() {
             {/* Memo (if exists) */}
             {event.memo && (
               <div>
-                <h2 className="text-xl font-medium text-gray-900 mb-4">
+                <h2 className="text-xl font-medium text-gray-900 mb-2">
                   Additional Information
                 </h2>
                 <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
@@ -288,7 +288,7 @@ export default function EventDetailPage() {
             {(user.role === "ADMIN" || user.role === "ORGANIZER") &&
               acceptedRSVPs.length > 0 && (
                 <div>
-                  <h2 className="text-xl font-medium text-gray-900 mb-4">
+                  <h2 className="text-xl font-medium text-gray-900 mb-2">
                     Confirmed Attendees ({acceptedRSVPs.length})
                   </h2>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -323,16 +323,15 @@ export default function EventDetailPage() {
                 }
               />
             )}
-          </div>
-
+          </div>{" "}
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-3">
             {/* Event details card */}
-            <div className="border border-gray-200 p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <div className="border border-gray-200 p-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Event Details
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div>
                   <div className="text-sm text-gray-600">Date & Time</div>
                   <div className="font-medium text-gray-900">
@@ -364,12 +363,11 @@ export default function EventDetailPage() {
                 </div>{" "}
               </div>
             </div>
-
             {/* Organizer Management - Show for organizers and admins */}
             {(user?.role === "ADMIN" ||
               event.organizers?.some((org) => org.userId === user?.id) ||
               event.createdBy.name === user?.name) && (
-              <div className="border border-gray-200 p-6">
+              <div className="border border-gray-200 p-4">
                 <OrganizerManagement
                   eventId={event.id}
                   currentUserId={user?.id || 0}
@@ -378,16 +376,14 @@ export default function EventDetailPage() {
                 />
               </div>
             )}
-
-            {/* RSVP card */}
+            {/* RSVP card */}{" "}
             {canRSVP && (
-              <div className="border border-gray-200 p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
+              <div className="border border-gray-200 p-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
                   Registration
-                </h3>
-
+                </h3>{" "}
                 {userRSVP ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-gray-600">
                         Your status:
@@ -464,25 +460,24 @@ export default function EventDetailPage() {
                   </div>
                 )}
               </div>
-            )}
-
+            )}{" "}
             {/* Feedback section */}
             <div>
-              <h2 className="text-xl font-medium text-gray-900 mb-4">
+              <h2 className="text-xl font-medium text-gray-900 mb-2">
                 Feedback
               </h2>
 
               {loadingFeedback ? (
-                <div className="animate-pulse space-y-4">
+                <div className="animate-pulse space-y-3">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                   <div className="h-4 bg-gray-200 rounded w-full"></div>
                   <div className="h-4 bg-gray-200 rounded w-5/6"></div>
                 </div>
               ) : feedback.length > 0 ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {feedback.map((item) => (
-                    <div key={item.id} className="border border-gray-200 p-6">
-                      <div className="flex items-start justify-between mb-3">
+                    <div key={item.id} className="border border-gray-200 p-4">
+                      <div className="flex items-start justify-between mb-2">
                         <div>
                           <div className="font-medium text-gray-900">
                             {item.user.name}
