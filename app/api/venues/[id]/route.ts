@@ -8,7 +8,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const venueId = parseInt(params.id)
+    const awaitedParams = await params;
+    const venueId = parseInt(awaitedParams.id)
     
     if (isNaN(venueId)) {
       return NextResponse.json({ error: 'Invalid venue ID' }, { status: 400 })
@@ -63,7 +64,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const venueId = parseInt(params.id)
+    const awaitedParams = await params;
+    const venueId = parseInt(awaitedParams.id)
     const { name, capacity } = await request.json()
     
     if (isNaN(venueId)) {
@@ -133,7 +135,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const venueId = parseInt(params.id)
+    const awaitedParams = await params;
+    const venueId = parseInt(awaitedParams.id)
     
     if (isNaN(venueId)) {
       return NextResponse.json({ error: 'Invalid venue ID' }, { status: 400 })

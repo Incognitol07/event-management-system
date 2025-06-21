@@ -8,7 +8,8 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id)
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id)
     
     if (isNaN(eventId)) {
       return NextResponse.json({ error: 'Invalid event ID' }, { status: 400 })

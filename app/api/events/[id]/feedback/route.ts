@@ -8,7 +8,8 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id)
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id)
     const { userId, rating, comment } = await request.json()
     
     if (isNaN(eventId)) {
@@ -102,7 +103,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id)
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id)
     
     if (isNaN(eventId)) {
       return NextResponse.json({ error: 'Invalid event ID' }, { status: 400 })

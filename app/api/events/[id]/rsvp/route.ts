@@ -8,7 +8,8 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id)
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id)
     const { status, userId } = await request.json()
     
     if (isNaN(eventId)) {

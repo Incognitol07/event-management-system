@@ -9,8 +9,9 @@ export async function PUT(
   { params }: { params: { id: string; resourceId: string } }
 ) {
   try {
-    const eventId = parseInt(params.id);
-    const resourceId = parseInt(params.resourceId);
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id);
+    const resourceId = parseInt(awaitedParams.resourceId);
 
     const eventResource = await prisma.eventResource.update({
       where: {
@@ -50,8 +51,9 @@ export async function PATCH(
   { params }: { params: { id: string; resourceId: string } }
 ) {
   try {
-    const eventId = parseInt(params.id);
-    const resourceId = parseInt(params.resourceId);
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id);
+    const resourceId = parseInt(awaitedParams.resourceId);
 
     const eventResource = await prisma.eventResource.update({
       where: {
@@ -89,8 +91,9 @@ export async function DELETE(
   { params }: { params: { id: string; resourceId: string } }
 ) {
   try {
-    const eventId = parseInt(params.id);
-    const resourceId = parseInt(params.resourceId);
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id);
+    const resourceId = parseInt(awaitedParams.resourceId);
 
     await prisma.eventResource.delete({
       where: {

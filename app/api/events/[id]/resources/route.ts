@@ -9,7 +9,8 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id);
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id);
     const body = await request.json();
     const { resourceId, quantityNeeded, notes } = body;
 
@@ -110,7 +111,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id);
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id);
 
     const eventResources = await prisma.eventResource.findMany({
       where: { eventId },

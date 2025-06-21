@@ -9,7 +9,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const resourceId = parseInt(params.id);
+    const awaitedParams = await params;
+    const resourceId = parseInt(awaitedParams.id);
     
     const resource = await prisma.resource.findUnique({
       where: { id: resourceId },
@@ -79,7 +80,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const resourceId = parseInt(params.id);
+    const awaitedParams = await params;
+    const resourceId = parseInt(awaitedParams.id);
     const body = await request.json();
     const { name, description, category, totalCount, isActive } = body;
 
@@ -139,7 +141,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const resourceId = parseInt(params.id);
+    const awaitedParams = await params;
+    const resourceId = parseInt(awaitedParams.id);
 
     // Check if resource has active allocations
     const activeAllocations = await prisma.eventResource.findMany({

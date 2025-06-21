@@ -9,7 +9,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id)
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id)
     
     if (isNaN(eventId)) {
       return NextResponse.json({ error: 'Invalid event ID' }, { status: 400 })
@@ -45,7 +46,8 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id)
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id)
     const { userId, addedBy } = await request.json()
     
     if (isNaN(eventId)) {
@@ -124,7 +126,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const eventId = parseInt(params.id)
+    const awaitedParams = await params;
+    const eventId = parseInt(awaitedParams.id)
     const { searchParams } = new URL(request.url)
     const userId = parseInt(searchParams.get('userId') || '')
     
