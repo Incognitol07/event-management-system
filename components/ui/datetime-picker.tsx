@@ -71,52 +71,59 @@ export default function DateTimePicker({
   };
   const formatDate = (dateString: string) => {
     if (!dateString) return "Select date";
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
 
-    const isToday = date.toDateString() === today.toDateString();
-    const isTomorrow = date.toDateString() === tomorrow.toDateString();
+    // Parse the date string directly (YYYY-MM-DD format)
+    const [year, month, day] = dateString.split("-").map(Number);
+
+    // Create dates at start of day in local timezone to avoid time zone issues
+    const selectedDate = new Date(year, month - 1, day, 0, 0, 0, 0);
+
+    const today = new Date();
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+
+    const tomorrow = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1,
+      0,
+      0,
+      0,
+      0
+    );
+
+    const isToday = selectedDate.getTime() === todayStart.getTime();
+    const isTomorrow = selectedDate.getTime() === tomorrow.getTime();
 
     if (isToday) return "Today";
     if (isTomorrow) return "Tomorrow";
 
-    return date.toLocaleDateString("en-US", {
+    return selectedDate.toLocaleDateString("en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
       year: "numeric",
     });
-  };
-  // Generate date options (next 30 days)
-  const generateDateOptions = () => {
-    const dates = [];
-    const today = new Date();
-    for (let i = 0; i < 30; i++) {
-      const currentDate = new Date(today);
-      currentDate.setDate(today.getDate() + i);
-      const dateString = currentDate.toISOString().split("T")[0];
-
-      let displayDate;
-      if (i === 0) displayDate = "Today";
-      else if (i === 1) displayDate = "Tomorrow";
-      else {
-        displayDate = currentDate.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
-      }
-
-      dates.push({ value: dateString, display: displayDate });
-    }
-    return dates;
-  };
-  // Calendar generation functions
+  }; // Calendar generation functions
   const generateCalendar = () => {
     const today = new Date();
+    // Set today to start of day for accurate comparison
+    const todayStart = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
 
     // Get first day of the month and number of days
     const firstDay = new Date(currentYear, currentMonth, 1);
@@ -130,12 +137,23 @@ export default function DateTimePicker({
 
     for (let i = 0; i < totalCells; i++) {
       const dayNumber = i - startingDayOfWeek + 1;
-
       if (dayNumber > 0 && dayNumber <= daysInMonth) {
-        const cellDate = new Date(currentYear, currentMonth, dayNumber);
-        const dateString = cellDate.toISOString().split("T")[0];
-        const isToday = cellDate.toDateString() === today.toDateString();
-        const isPast = cellDate < today;
+        const cellDate = new Date(
+          currentYear,
+          currentMonth,
+          dayNumber,
+          0,
+          0,
+          0,
+          0
+        );
+        // Create date string in YYYY-MM-DD format without timezone conversion
+        const dateString = `${currentYear}-${String(currentMonth + 1).padStart(
+          2,
+          "0"
+        )}-${String(dayNumber).padStart(2, "0")}`;
+        const isToday = cellDate.getTime() === todayStart.getTime();
+        const isPast = cellDate < todayStart;
         const isSelected = dateString === date;
 
         calendar.push({
@@ -229,13 +247,19 @@ export default function DateTimePicker({
                 >
                   <span className="text-gray-600">→</span>
                 </button>
-              </div>
+              </div>{" "}
               <div className="flex space-x-1">
+                {" "}
                 <button
                   type="button"
                   onClick={() => {
                     const today = new Date();
-                    const todayString = today.toISOString().split("T")[0];
+                    const todayString =
+                      today.getFullYear() +
+                      "-" +
+                      String(today.getMonth() + 1).padStart(2, "0") +
+                      "-" +
+                      String(today.getDate()).padStart(2, "0");
                     onChange("date", todayString);
                     goToToday();
                   }}
@@ -246,9 +270,22 @@ export default function DateTimePicker({
                 <button
                   type="button"
                   onClick={() => {
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    const tomorrowString = tomorrow.toISOString().split("T")[0];
+                    const today = new Date();
+                    const tomorrow = new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() + 1,
+                      0,
+                      0,
+                      0,
+                      0
+                    );
+                    const tomorrowString =
+                      tomorrow.getFullYear() +
+                      "-" +
+                      String(tomorrow.getMonth() + 1).padStart(2, "0") +
+                      "-" +
+                      String(tomorrow.getDate()).padStart(2, "0");
                     onChange("date", tomorrowString);
                     // Navigate to tomorrow's month if needed
                     setCurrentMonth(tomorrow.getMonth());
