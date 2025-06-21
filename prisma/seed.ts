@@ -180,7 +180,6 @@ async function main() {  // Clear existing data
       createdById: student1.id,
     },
   })
-
   const event3 = await prisma.event.create({
     data: {
       title: 'Emergency Faculty Meeting',
@@ -193,9 +192,31 @@ async function main() {  // Clear existing data
       memo: 'Emergency meeting called by the Dean due to urgent policy changes.',
       isApproved: true,
       priority: Priority.EMERGENCY,
-      createdById: admin.id,    },
+      createdById: admin.id,
+    },
+  })
+  // Create a recurring event (Weekly Chapel Service)
+  const recurringEvent = await prisma.event.create({
+    data: {
+      title: 'Weekly Chapel Service',
+      description: 'Join us for our weekly chapel service featuring inspiring messages, worship, and community fellowship. All students, faculty, and staff are welcome.',
+      date: new Date('2025-06-25'), // First occurrence
+      startTime: '18:00',
+      endTime: '19:30',
+      venueId: venue1.id,
+      capacity: 300,
+      memo: 'Recurring weekly chapel service approved for the entire semester.',
+      isApproved: true,
+      priority: Priority.NORMAL,
+      category: 'SPIRITUAL',
+      createdById: coordinator2.id,
+      isRecurring: true,
+      recurrenceType: 'WEEKLY',
+      recurrenceEnd: new Date('2025-12-31'), // Ends at end of year
+    },
   })
 
+  // Note: Recurring instances will be calculated dynamically, no need to create them in the database
   // Create organizer relationships for the many-to-many system
   // Event 1: Science Fair - John as primary, Sarah as co-organizer
   await prisma.eventOrganizer.create({
@@ -239,6 +260,14 @@ async function main() {  // Clear existing data
       userId: coordinator.id,
       role: 'CO_ORGANIZER',
       addedBy: admin.id,
+    },
+  })
+  // Recurring Event: Chapel Service - Sarah as primary organizer
+  await prisma.eventOrganizer.create({
+    data: {
+      eventId: recurringEvent.id,
+      userId: coordinator2.id,
+      role: 'PRIMARY_ORGANIZER',
     },
   })
 

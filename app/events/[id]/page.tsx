@@ -8,6 +8,7 @@ import ProtectedHeader from "@/components/layout/protected-header";
 import { ResourceSelector } from "@/components/resources/resource-selector";
 import { ResourceView } from "@/components/resources/resource-view";
 import OrganizerManagement from "@/components/events/organizer-management";
+import { getRecurrenceDescription } from "@/lib/recurring-events";
 
 type Event = {
   id: number;
@@ -22,6 +23,11 @@ type Event = {
   priority: string;
   isApproved: boolean;
   createdBy: { name: string; role: string };
+  isRecurring?: boolean;
+  recurrenceType?: "DAILY" | "WEEKLY" | "MONTHLY";
+  recurrenceEnd?: string;
+  parentEventId?: number;
+  originalDate?: string;
   organizers?: Array<{
     id: number;
     userId: number;
@@ -336,7 +342,7 @@ export default function EventDetailPage() {
                   <div className="text-sm text-gray-700">
                     Capacity: {event.venue.capacity} people
                   </div>
-                </div>
+                </div>{" "}
                 <div>
                   <div className="text-sm text-gray-600">Event Capacity</div>
                   <div className="font-medium text-gray-900">
@@ -348,6 +354,28 @@ export default function EventDetailPage() {
                     </div>
                   )}
                 </div>{" "}
+                {/* Recurrence information */}
+                {event.isRecurring && (
+                  <div>
+                    <div className="text-sm text-gray-600">Recurring Event</div>
+                    <div className="font-medium text-gray-900">
+                      {getRecurrenceDescription(
+                        event.recurrenceType || null,
+                        event.recurrenceEnd
+                          ? new Date(event.recurrenceEnd)
+                          : null
+                      )}
+                    </div>
+                  </div>
+                )}
+                {event.parentEventId && (
+                  <div>
+                    <div className="text-sm text-gray-600">Part of Series</div>
+                    <div className="text-sm text-gray-700">
+                      This is a recurring event instance
+                    </div>
+                  </div>
+                )}{" "}
               </div>
             </div>
             {/* Organizer Management - Show for organizers and admins */}

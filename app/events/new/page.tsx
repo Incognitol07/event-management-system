@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import ProtectedHeader from "@/components/layout/protected-header";
 import DateTimePicker from "@/components/ui/datetime-picker";
+import DatePicker from "@/components/ui/date-picker";
 import { EventResourceRequest } from "@/components/resources/event-resource-request";
 
 interface ResourceRequest {
@@ -46,6 +47,9 @@ export default function NewEventPage() {
       | "SPORTS"
       | "CULTURAL",
     department: "",
+    isRecurring: false,
+    recurrenceType: "WEEKLY" as "DAILY" | "WEEKLY" | "MONTHLY",
+    recurrenceEnd: "",
   });
 
   useEffect(() => {
@@ -171,6 +175,12 @@ export default function NewEventPage() {
           capacity: parseInt(formData.capacity),
           createdById: user?.id,
           isApproved: user?.role === "ADMIN", // Auto-approve for admins
+          isRecurring: formData.isRecurring,
+          recurrenceType: formData.isRecurring ? formData.recurrenceType : null,
+          recurrenceEnd:
+            formData.isRecurring && formData.recurrenceEnd
+              ? formData.recurrenceEnd
+              : null,
         }),
       });
 
@@ -292,6 +302,83 @@ export default function NewEventPage() {
             endTime={formData.endTime}
             onChange={handleDateTimeChange}
           />
+          {/* Recurring Event Settings */}
+          <div className="group border border-gray-100 p-4 transition-all duration-300 hover:border-gray-200">
+            <div className="flex items-center space-x-3 mb-3">
+              <input
+                type="checkbox"
+                id="isRecurring"
+                checked={formData.isRecurring}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    isRecurring: e.target.checked,
+                    recurrenceEnd: e.target.checked ? prev.recurrenceEnd : "",
+                  }))
+                }
+                className="w-4 h-4 text-gray-900 border-gray-300 focus:ring-gray-900 transition-all duration-300"
+              />
+              <label
+                htmlFor="isRecurring"
+                className="text-sm font-medium text-gray-900 cursor-pointer transition-all duration-300 hover:text-gray-700"
+              >
+                Make this a recurring event
+              </label>
+            </div>
+
+            {formData.isRecurring && (
+              <div className="space-y-3 pl-7 animate-in slide-in-from-top-2 duration-300">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Repeat
+                    </label>
+                    <select
+                      value={formData.recurrenceType}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          recurrenceType: e.target.value as
+                            | "DAILY"
+                            | "WEEKLY"
+                            | "MONTHLY",
+                        }))
+                      }
+                      className="w-full px-2 py-1 text-sm border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400"
+                    >
+                      <option value="DAILY">Daily</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                    </select>
+                  </div>{" "}
+                  <DatePicker
+                    label="End Date (Optional)"
+                    date={formData.recurrenceEnd}
+                    onChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        recurrenceEnd: value,
+                      }))
+                    }
+                    minDate={formData.date}
+                    placeholder="No end date"
+                  />
+                </div>
+                <div className="text-xs text-gray-500">
+                  {formData.recurrenceType === "DAILY" &&
+                    "Event will repeat every day"}
+                  {formData.recurrenceType === "WEEKLY" &&
+                    "Event will repeat weekly on the same day"}
+                  {formData.recurrenceType === "MONTHLY" &&
+                    "Event will repeat monthly on the same date"}
+                  {formData.recurrenceEnd &&
+                    ` until ${new Date(
+                      formData.recurrenceEnd
+                    ).toLocaleDateString()}`}
+                </div>
+              </div>
+            )}
+          </div>
           {/* Venue and Capacity */}
           <div className="grid grid-cols-2 gap-4">
             <div className="group">

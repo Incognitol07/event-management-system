@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '../../../generated/prisma'
+import { calculateRecurringInstances } from '@/lib/recurring-events'
 
 const prisma = new PrismaClient()
 
@@ -57,7 +58,74 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(events)
+    // Add recurring instances if month filter is provided
+    let allEvents = [...events]
+    if (month) {
+      const [year, monthNum] = month.split('-')
+      const startDate = new Date(parseInt(year), parseInt(monthNum) - 1, 1)
+      const endDate = new Date(parseInt(year), parseInt(monthNum), 0)
+
+      // Find all recurring events that might have instances in this month
+      const recurringEvents = await prisma.event.findMany({
+        where: {
+          isRecurring: true,
+          OR: [
+            { date: { lte: endDate } }, // Started before or during this month
+            { recurrenceEnd: { gte: startDate } }, // Ends after this month starts
+            { recurrenceEnd: null }, // No end date
+          ],
+        },
+        include: {
+          venue: true,
+          createdBy: true,
+          organizers: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  role: true,
+                },
+              },
+            },
+          },
+          resources: {
+            include: {
+              resource: {
+                select: {
+                  name: true,
+                  category: true,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      // Generate virtual instances for recurring events
+      for (const recurringEvent of recurringEvents) {
+        const instances = calculateRecurringInstances(
+          recurringEvent as any,
+          startDate,
+          endDate
+        )        // Convert virtual instances to event format
+        const virtualEvents = instances.map(instance => ({
+          ...recurringEvent,
+          id: parseInt(`${recurringEvent.id}${instance.instanceDate.getFullYear()}${(instance.instanceDate.getMonth() + 1).toString().padStart(2, '0')}${instance.instanceDate.getDate().toString().padStart(2, '0')}`), // Create unique numeric ID
+          date: instance.instanceDate,
+          isRecurringInstance: true,
+          parentEventId: recurringEvent.id,
+        }))
+
+        allEvents = [...allEvents, ...virtualEvents]
+      }
+
+      // Sort all events by date
+      allEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    }
+
+    return NextResponse.json(allEvents)
   } catch (error) {
     console.error('Error fetching events:', error)
     return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 })
@@ -119,16 +187,15 @@ export async function POST(request: NextRequest) {
         { error: 'Time/venue conflict detected with existing event' },
         { status: 409 }
       )
-    }
-
-    // Validate description length (300 words max)
+    }    // Validate description length (300 words max)
     const wordCount = data.description?.split(/\s+/).length || 0
     if (wordCount > 300) {
       return NextResponse.json(
         { error: 'Description cannot exceed 300 words' },
         { status: 400 }
       )
-    }    const event = await prisma.event.create({
+    }    // Handle recurring events - just store the template, instances will be calculated dynamically
+    const event = await prisma.event.create({
       data: {
         title: data.title,
         description: data.description || '',
@@ -143,6 +210,9 @@ export async function POST(request: NextRequest) {
         department: data.department || null,
         isApproved: data.isApproved || false,
         createdById: data.createdById,
+        isRecurring: data.isRecurring || false,
+        recurrenceType: data.isRecurring ? data.recurrenceType : null,
+        recurrenceEnd: data.isRecurring && data.recurrenceEnd ? new Date(data.recurrenceEnd) : null,
         // Create the primary organizer relationship
         organizers: {
           create: {
@@ -165,8 +235,7 @@ export async function POST(request: NextRequest) {
               },
             },
           },
-        },
-      },
+        },      },
     })
 
     return NextResponse.json(event, { status: 201 })

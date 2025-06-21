@@ -51,24 +51,27 @@ model Venue {
 
 // Core Event model with essential fields
 model Event {
-  id          Int           @id @default(autoincrement())
-  title       String
-  description String // Max 300 words enforced in app logic
-  date        DateTime
-  startTime   String // Store as string for simplicity (HH:MM format)
-  endTime     String
-  venueId     Int
-  capacity    Int
-  memo        String
-  isApproved  Boolean       @default(false)
-  priority    Priority      @default(NORMAL)
-  category    EventCategory @default(ACADEMIC)
-  department  String? // Optional department/organization
-  createdById Int // Primary organizer (for backward compatibility)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id             Int             @id @default(autoincrement())
+  title          String
+  description    String // Max 300 words enforced in app logic
+  date           DateTime
+  startTime      String // Store as string for simplicity (HH:MM format)
+  endTime        String
+  venueId        Int
+  capacity       Int
+  memo           String
+  isApproved     Boolean         @default(false)
+  priority       Priority        @default(NORMAL)
+  category       EventCategory   @default(ACADEMIC)
+  department     String? // Optional department/organization
+  createdById    Int // Primary organizer (for backward compatibility)
+  // Recurring event fields
+  isRecurring    Boolean         @default(false)
+  recurrenceType RecurrenceType?
+  recurrenceEnd  DateTime?
 
-  // Relationships
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt // Relationships
   venue      Venue            @relation(fields: [venueId], references: [id])
   createdBy  User             @relation("EventOrganizer", fields: [createdById], references: [id])
   organizers EventOrganizer[] // Many-to-many relationship for all organizers
@@ -101,6 +104,12 @@ enum Priority {
   NORMAL
   HIGH
   EMERGENCY
+}
+
+enum RecurrenceType {
+  DAILY
+  WEEKLY
+  MONTHLY
 }
 
 enum EventCategory {
