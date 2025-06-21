@@ -8,6 +8,8 @@ const protectedRoutes: Record<string, string[]> = {
   '/events/new': ['ADMIN', 'STAFF'],
   '/locations': [],
   '/calendar': [],
+  '/resources': ['ADMIN'], // Only admins can manage resources
+  '/profile': [],
 }
 
 // Public routes that don't require authentication

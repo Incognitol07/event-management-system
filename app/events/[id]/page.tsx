@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { format } from "date-fns";
 import ProtectedHeader from "@/components/layout/protected-header";
 import { ResourceSelector } from "@/components/resources/resource-selector";
+import { ResourceView } from "@/components/resources/resource-view";
 
 type Event = {
   id: number;
@@ -260,7 +261,6 @@ export default function EventDetailPage() {
                 {event.description}
               </p>
             </div>
-
             {/* Memo (if exists) */}
             {event.memo && (
               <div>
@@ -272,7 +272,6 @@ export default function EventDetailPage() {
                 </p>
               </div>
             )}
-
             {/* Attendees (if user can see them) */}
             {(user.role === "ADMIN" || user.role === "STAFF") &&
               acceptedRSVPs.length > 0 && (
@@ -289,12 +288,9 @@ export default function EventDetailPage() {
                     ))}
                   </div>
                 </div>
-              )}
-
-            {/* Resource Management (for event organizers, staff, and admins) */}
-            {(user.role === "ADMIN" ||
-              user.role === "STAFF" ||
-              event.createdBy.name === user.name) && (
+              )}{" "}
+            {/* Resource Management */}
+            {user.role === "ADMIN" && (
               <div>
                 <ResourceSelector
                   eventId={parseInt(eventId)}
@@ -303,6 +299,13 @@ export default function EventDetailPage() {
                   existingAllocations={resourceAllocations}
                 />
               </div>
+            )}
+            {/* Resource View for organizers and staff */}
+            {user.role !== "ADMIN" && (
+              <ResourceView
+                eventId={parseInt(eventId)}
+                isOrganizer={event.createdBy.name === user.name}
+              />
             )}
           </div>
 

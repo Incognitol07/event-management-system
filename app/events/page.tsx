@@ -20,6 +20,16 @@ type Event = {
   department?: string;
   isApproved: boolean;
   createdBy: { name: string; role: string };
+  resources?: Array<{
+    id: number;
+    resourceId: number;
+    quantityNeeded: number;
+    status: string;
+    resource: {
+      name: string;
+      category: string;
+    };
+  }>;
 };
 
 export default function EventsPage() {
@@ -28,9 +38,12 @@ export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved">(
-    "approved"
+    "approved" // Default to approved for all users
   );
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+
+  // Check if user can see pending events
+  const canViewPendingEvents = user?.role === "ADMIN";
 
   useEffect(() => {
     if (user) {
@@ -154,26 +167,30 @@ export default function EventsPage() {
               >
                 Approved
               </button>
-              <button
-                onClick={() => setFilter("pending")}
-                className={`text-sm px-3 py-2 transition-all duration-300 ${
-                  filter === "pending"
-                    ? "border-b-2 border-gray-900 font-medium text-gray-900"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                Pending
-              </button>
-              <button
-                onClick={() => setFilter("all")}
-                className={`text-sm px-3 py-2 transition-all duration-300 ${
-                  filter === "all"
-                    ? "border-b-2 border-gray-900 font-medium text-gray-900"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                All
-              </button>
+              {canViewPendingEvents && (
+                <button
+                  onClick={() => setFilter("pending")}
+                  className={`text-sm px-3 py-2 transition-all duration-300 ${
+                    filter === "pending"
+                      ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  Pending
+                </button>
+              )}
+              {canViewPendingEvents && (
+                <button
+                  onClick={() => setFilter("all")}
+                  className={`text-sm px-3 py-2 transition-all duration-300 ${
+                    filter === "all"
+                      ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
+                >
+                  All
+                </button>
+              )}
             </div>
 
             {/* Category Filter */}
@@ -235,10 +252,39 @@ export default function EventsPage() {
                           Pending
                         </span>
                       )}
-                    </div>
+                    </div>{" "}
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                       {event.description}
                     </p>
+                    {/* Show resource requests for pending events (admin only) */}
+                    {!event.isApproved &&
+                      canApprove &&
+                      event.resources &&
+                      event.resources.length > 0 && (
+                        <div className="mb-3">
+                          <p className="text-xs font-medium text-gray-700 mb-1">
+                            Resource Requests:
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {event.resources
+                              .slice(0, 3)
+                              .map((resource, idx) => (
+                                <span
+                                  key={idx}
+                                  className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded"
+                                >
+                                  {resource.resource.name} (
+                                  {resource.quantityNeeded})
+                                </span>
+                              ))}
+                            {event.resources.length > 3 && (
+                              <span className="text-xs text-gray-500">
+                                +{event.resources.length - 3} more
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                   </div>
                   {canApprove && !event.isApproved && (
                     <button

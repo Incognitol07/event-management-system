@@ -21,13 +21,21 @@ export async function GET(request: NextRequest) {
           lte: endDate,
         },
       }
-    }
-
-    const events = await prisma.event.findMany({
+    }    const events = await prisma.event.findMany({
       where: whereCondition,
       include: {
         venue: true,
         createdBy: true,
+        resources: {
+          include: {
+            resource: {
+              select: {
+                name: true,
+                category: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         date: 'asc',

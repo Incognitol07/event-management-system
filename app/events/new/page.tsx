@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import ProtectedHeader from "@/components/layout/protected-header";
 import DateTimePicker from "@/components/ui/datetime-picker";
+import { EventResourceRequest } from "@/components/resources/event-resource-request";
+
+interface ResourceRequest {
+  resourceId: number;
+  quantityNeeded: number;
+  notes?: string;
+}
 
 type Venue = {
   id: number;
@@ -16,6 +23,9 @@ export default function NewEventPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const [venues, setVenues] = useState<Venue[]>([]);
+  const [resourceRequests, setResourceRequests] = useState<ResourceRequest[]>(
+    []
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -53,6 +63,28 @@ export default function NewEventPage() {
       console.error("Failed to fetch venues:", error);
     }
   };
+
+  const addResourceRequest = (request: ResourceRequest) => {
+    setResourceRequests((prev) => [...prev, request]);
+  };
+
+  const removeResourceRequest = (resourceId: number) => {
+    setResourceRequests((prev) =>
+      prev.filter((req) => req.resourceId !== resourceId)
+    );
+  };
+
+  const updateResourceRequest = (
+    resourceId: number,
+    updates: Partial<ResourceRequest>
+  ) => {
+    setResourceRequests((prev) =>
+      prev.map((req) =>
+        req.resourceId === resourceId ? { ...req, ...updates } : req
+      )
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -126,9 +158,9 @@ export default function NewEventPage() {
       setIsSubmitting(false);
       return;
     }
-
     try {
-      const response = await fetch("/api/events", {
+      // Create the event first
+      const eventResponse = await fetch("/api/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -142,10 +174,28 @@ export default function NewEventPage() {
         }),
       });
 
-      if (response.ok) {
+      if (eventResponse.ok) {
+        const newEvent = await eventResponse.json();
+
+        // If there are resource requests, create them
+        if (resourceRequests.length > 0) {
+          const resourcePromises = resourceRequests.map((request) =>
+            fetch(`/api/events/${newEvent.id}/resources`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(request),
+            })
+          );
+
+          // Wait for all resource requests to be created
+          await Promise.all(resourcePromises);
+        }
+
         router.push("/events");
       } else {
-        const errorData = await response.json();
+        const errorData = await eventResponse.json();
         setError(errorData.error || "Failed to create event");
       }
     } catch (error) {
@@ -357,6 +407,16 @@ export default function NewEventPage() {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 hover:border-gray-400 focus:scale-105"
               placeholder="e.g., Computer Science, Student Affairs, etc."
+            />{" "}
+          </div>{" "}
+          {/* Resource Requests */}
+          <div className="group">
+            <EventResourceRequest
+              eventDate={formData.date}
+              resourceRequests={resourceRequests}
+              onAddRequest={addResourceRequest}
+              onRemoveRequest={removeResourceRequest}
+              onUpdateRequest={updateResourceRequest}
             />
           </div>
           {/* Memo */}

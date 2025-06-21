@@ -44,6 +44,45 @@ export async function PUT(
   }
 }
 
+// PATCH /api/events/[id]/resources/[resourceId] - Deny resource allocation
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string; resourceId: string } }
+) {
+  try {
+    const eventId = parseInt(params.id);
+    const resourceId = parseInt(params.resourceId);
+
+    const eventResource = await prisma.eventResource.update({
+      where: {
+        eventId_resourceId: {
+          eventId,
+          resourceId,
+        },
+      },
+      data: {
+        status: 'DENIED',
+      },
+      include: {
+        resource: true,
+        event: {
+          select: {
+            title: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(eventResource);
+  } catch (error) {
+    console.error('Error denying resource allocation:', error);
+    return NextResponse.json(
+      { error: 'Failed to deny resource allocation' },
+      { status: 500 }
+    );
+  }
+}
+
 // DELETE /api/events/[id]/resources/[resourceId] - Remove resource allocation
 export async function DELETE(
   request: NextRequest,

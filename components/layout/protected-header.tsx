@@ -52,7 +52,7 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
             >
               Venues
             </button>
-            {(user?.role === "ADMIN" || user?.role === "STAFF") && (
+            {user?.role === "ADMIN" && (
               <button
                 onClick={() => router.push("/resources")}
                 className={`text-sm transition-all duration-300 hover:scale-105 ${
