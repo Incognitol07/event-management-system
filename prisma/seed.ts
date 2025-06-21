@@ -6,6 +6,7 @@ async function main() {  // Clear existing data
   await prisma.feedback.deleteMany()
   await prisma.eventRSVP.deleteMany()
   await prisma.eventResource.deleteMany()
+  await prisma.eventOrganizer.deleteMany() // Clear organizer relationships
   await prisma.event.deleteMany()
   await prisma.venue.deleteMany()
   await prisma.resource.deleteMany()
@@ -19,11 +20,18 @@ async function main() {  // Clear existing data
       role: Role.ADMIN,
     },
   })
-
   const coordinator = await prisma.user.create({
     data: {
       name: 'John Coordinator',
       email: 'coordinator@cu.edu.ng',
+      role: Role.ORGANIZER,
+    },
+  })
+
+  const coordinator2 = await prisma.user.create({
+    data: {
+      name: 'Sarah Events Manager',
+      email: 'sarah@cu.edu.ng',
       role: Role.ORGANIZER,
     },
   })
@@ -185,7 +193,52 @@ async function main() {  // Clear existing data
       memo: 'Emergency meeting called by the Dean due to urgent policy changes.',
       isApproved: true,
       priority: Priority.EMERGENCY,
-      createdById: admin.id,
+      createdById: admin.id,    },
+  })
+
+  // Create organizer relationships for the many-to-many system
+  // Event 1: Science Fair - John as primary, Sarah as co-organizer
+  await prisma.eventOrganizer.create({
+    data: {
+      eventId: event1.id,
+      userId: coordinator.id,
+      role: 'PRIMARY_ORGANIZER',
+    },
+  })
+
+  await prisma.eventOrganizer.create({
+    data: {
+      eventId: event1.id,
+      userId: coordinator2.id,
+      role: 'CO_ORGANIZER',
+      addedBy: coordinator.id,
+    },
+  })
+
+  // Event 2: Study Group - Alice as primary organizer
+  await prisma.eventOrganizer.create({
+    data: {
+      eventId: event2.id,
+      userId: student1.id,
+      role: 'PRIMARY_ORGANIZER',
+    },
+  })
+
+  // Event 3: Faculty Meeting - Admin as primary, John as co-organizer
+  await prisma.eventOrganizer.create({
+    data: {
+      eventId: event3.id,
+      userId: admin.id,
+      role: 'PRIMARY_ORGANIZER',
+    },
+  })
+
+  await prisma.eventOrganizer.create({
+    data: {
+      eventId: event3.id,
+      userId: coordinator.id,
+      role: 'CO_ORGANIZER',
+      addedBy: admin.id,
     },
   })
 
