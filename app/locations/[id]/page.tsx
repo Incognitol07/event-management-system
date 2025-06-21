@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { format } from "date-fns";
 import ProtectedHeader from "@/components/layout/protected-header";
+import ConfirmModal from "@/components/ui/confirm-modal";
 
 type Venue = {
   id: number;
@@ -28,7 +29,6 @@ export default function VenueDetailPage() {
   const router = useRouter();
   const params = useParams();
   const venueId = params.id as string;
-
   const [venue, setVenue] = useState<Venue | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -37,6 +37,7 @@ export default function VenueDetailPage() {
     capacity: 0,
   });
   const [submitting, setSubmitting] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     if (user && venueId) {
@@ -89,17 +90,8 @@ export default function VenueDetailPage() {
       setSubmitting(false);
     }
   };
-
   const handleDelete = async () => {
     if (!venue || !user || user.role !== "ADMIN") return;
-
-    if (
-      !confirm(
-        `Are you sure you want to delete "${venue.name}"? This action cannot be undone.`
-      )
-    ) {
-      return;
-    }
 
     try {
       setSubmitting(true);
@@ -118,6 +110,7 @@ export default function VenueDetailPage() {
       alert("Failed to delete venue");
     } finally {
       setSubmitting(false);
+      setShowDeleteModal(false);
     }
   };
 
@@ -242,9 +235,9 @@ export default function VenueDetailPage() {
                       className="text-sm text-gray-600 hover:text-gray-900 px-4 py-2 border border-gray-300 hover:border-gray-400 transition-colors"
                     >
                       Edit
-                    </button>
+                    </button>{" "}
                     <button
-                      onClick={handleDelete}
+                      onClick={() => setShowDeleteModal(true)}
                       disabled={submitting || venue._count.events > 0}
                       className="text-sm text-red-600 hover:text-red-700 px-4 py-2 border border-red-300 hover:border-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title={
@@ -284,7 +277,6 @@ export default function VenueDetailPage() {
               <div className="text-sm text-gray-600">Max Capacity</div>
             </div>
           </div>
-
           {/* Upcoming events */}
           {upcomingEvents.length > 0 && (
             <div>
@@ -320,7 +312,6 @@ export default function VenueDetailPage() {
               </div>
             </div>
           )}
-
           {/* Past events */}
           {pastEvents.length > 0 && (
             <div>
@@ -361,7 +352,6 @@ export default function VenueDetailPage() {
               </div>
             </div>
           )}
-
           {venue._count.events === 0 && (
             <div className="text-center py-12">
               <div className="text-4xl mb-4 opacity-60">🏛️</div>
@@ -369,9 +359,21 @@ export default function VenueDetailPage() {
                 No events have been hosted at this venue yet
               </p>
             </div>
-          )}
+          )}{" "}
         </div>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Venue"
+        message={`Are you sure you want to delete "${venue?.name}"? This action cannot be undone and will permanently remove this venue from the system.`}
+        confirmText="Delete Venue"
+        confirmVariant="danger"
+        isLoading={submitting}
+      />
     </div>
   );
 }
