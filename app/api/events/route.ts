@@ -9,7 +9,27 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const month = searchParams.get('month')
 
-    let whereCondition = {}
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const currentTime = now.toTimeString().slice(0, 8) // HH:MM:SS format
+
+    let whereCondition: any = {
+      OR: [
+        // Events in the future
+        {
+          date: {
+            gt: today,
+          },
+        },
+        // Events today that haven't ended yet
+        {
+          date: today,
+          endTime: {
+            gt: currentTime,
+          },
+        },
+      ],
+    }
     
     if (month) {
       const [year, monthNum] = month.split('-')
@@ -17,12 +37,34 @@ export async function GET(request: NextRequest) {
       const endDate = new Date(parseInt(year), parseInt(monthNum), 0)
       
       whereCondition = {
-        date: {
-          gte: startDate,
-          lte: endDate,
-        },
+        AND: [
+          {
+            date: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+          {
+            OR: [
+              // Events in the future
+              {
+                date: {
+                  gt: today,
+                },
+              },
+              // Events today that haven't ended yet
+              {
+                date: today,
+                endTime: {
+                  gt: currentTime,
+                },
+              },
+            ],
+          },
+        ],
       }
-    }    const events = await prisma.event.findMany({
+    }
+    const events = await prisma.event.findMany({
       where: whereCondition,
       include: {
         venue: true,
@@ -63,16 +105,48 @@ export async function GET(request: NextRequest) {
     if (month) {
       const [year, monthNum] = month.split('-')
       const startDate = new Date(parseInt(year), parseInt(monthNum) - 1, 1)
-      const endDate = new Date(parseInt(year), parseInt(monthNum), 0)
-
-      // Find all recurring events that might have instances in this month
+      const endDate = new Date(parseInt(year), parseInt(monthNum), 0)      // Find all recurring events that might have instances in this month
       const recurringEvents = await prisma.event.findMany({
         where: {
-          isRecurring: true,
-          OR: [
-            { date: { lte: endDate } }, // Started before or during this month
-            { recurrenceEnd: { gte: startDate } }, // Ends after this month starts
-            { recurrenceEnd: null }, // No end date
+          AND: [
+            {
+              isRecurring: true,
+            },
+            {
+              OR: [
+                { date: { lte: endDate } }, // Started before or during this month
+                { recurrenceEnd: { gte: startDate } }, // Ends after this month starts
+                { recurrenceEnd: null }, // No end date
+              ],
+            },
+            // Only include recurring events that haven't completely passed
+            {
+              OR: [
+                // Events in the future
+                {
+                  date: {
+                    gt: today,
+                  },
+                },
+                // Events today that haven't ended yet
+                {
+                  date: today,
+                  endTime: {
+                    gt: currentTime,
+                  },
+                },
+                // Recurring events with end date in the future
+                {
+                  recurrenceEnd: {
+                    gte: today,
+                  },
+                },
+                // Recurring events with no end date
+                {
+                  recurrenceEnd: null,
+                },
+              ],
+            },
           ],
         },
         include: {
@@ -110,13 +184,22 @@ export async function GET(request: NextRequest) {
           startDate,
           endDate
         )        // Convert virtual instances to event format
-        const virtualEvents = instances.map(instance => ({
-          ...recurringEvent,
-          id: parseInt(`${recurringEvent.id}${instance.instanceDate.getFullYear()}${(instance.instanceDate.getMonth() + 1).toString().padStart(2, '0')}${instance.instanceDate.getDate().toString().padStart(2, '0')}`), // Create unique numeric ID
-          date: instance.instanceDate,
-          isRecurringInstance: true,
-          parentEventId: recurringEvent.id,
-        }))
+        const virtualEvents = instances
+          .filter(instance => {
+            const instanceDate = new Date(instance.instanceDate.getFullYear(), instance.instanceDate.getMonth(), instance.instanceDate.getDate())
+            const instanceEndTime = recurringEvent.endTime
+            
+            // Filter out instances that have already passed
+            return instanceDate > today || 
+                   (instanceDate.getTime() === today.getTime() && instanceEndTime > currentTime)
+          })
+          .map(instance => ({
+            ...recurringEvent,
+            id: parseInt(`${recurringEvent.id}${instance.instanceDate.getFullYear()}${(instance.instanceDate.getMonth() + 1).toString().padStart(2, '0')}${instance.instanceDate.getDate().toString().padStart(2, '0')}`), // Create unique numeric ID
+            date: instance.instanceDate,
+            isRecurringInstance: true,
+            parentEventId: recurringEvent.id,
+          }))
 
         allEvents = [...allEvents, ...virtualEvents]
       }
