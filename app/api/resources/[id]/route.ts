@@ -42,7 +42,6 @@ export async function GET(
         },
       },
     });
-
     if (!resource) {
       return NextResponse.json(
         { error: 'Resource not found' },
@@ -50,7 +49,21 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(resource);
+    // Calculate available and allocated counts
+    const allocatedQuantity = resource.eventResources
+      .filter(allocation => 
+        allocation.status === 'APPROVED' && 
+        new Date(allocation.event.date) >= new Date()
+      )
+      .reduce((sum, allocation) => sum + allocation.quantityNeeded, 0);
+    
+    const resourceWithCounts = {
+      ...resource,
+      availableCount: resource.totalCount - allocatedQuantity,
+      allocatedCount: allocatedQuantity,
+    };
+
+    return NextResponse.json(resourceWithCounts);
   } catch (error) {
     console.error('Error fetching resource:', error);
     return NextResponse.json(
@@ -69,6 +82,35 @@ export async function PUT(
     const resourceId = parseInt(params.id);
     const body = await request.json();
     const { name, description, category, totalCount, isActive } = body;
+
+    // If totalCount is being updated, validate against current allocations
+    if (totalCount !== undefined) {
+      const currentAllocations = await prisma.eventResource.findMany({
+        where: {
+          resourceId,
+          status: 'APPROVED',
+          event: {
+            date: {
+              gte: new Date(),
+            },
+          },
+        },
+      });
+
+      const allocatedQuantity = currentAllocations.reduce(
+        (sum, allocation) => sum + allocation.quantityNeeded,
+        0
+      );
+
+      if (parseInt(totalCount) < allocatedQuantity) {
+        return NextResponse.json(
+          { 
+            error: `Cannot set total count to ${totalCount}. Currently allocated: ${allocatedQuantity}. Total count must be at least ${allocatedQuantity}.` 
+          },
+          { status: 400 }
+        );
+      }
+    }
 
     const resource = await prisma.resource.update({
       where: { id: resourceId },
