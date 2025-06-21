@@ -49,26 +49,41 @@ export default function LocationsPage() {
       </div>
     );
   }
-
   if (!user) {
     return null;
   }
 
+  const canCreateVenue = user.role === "ADMIN";
+
   return (
     <div className="min-h-screen bg-white">
-      <ProtectedHeader
-        title="Venues"
-        subtitle="Beautiful spaces for memorable events 🏛️"
-        showNavigation={true}
-        currentPage="venues"
-      />
+      <ProtectedHeader currentPage="venues" />
 
       <main className="max-w-6xl mx-auto px-6 py-6">
+        {/* Page header with new venue button */}
+        {canCreateVenue && (
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-2xl font-light text-gray-900">Venues</h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Manage venue locations and details
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/locations/new")}
+              className="bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-all duration-300 hover:scale-105"
+            >
+              New Venue
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {venues.map((venue) => (
             <div
               key={venue.id}
               className="group border border-gray-100 p-6 hover:border-gray-300 transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
+              onClick={() => router.push(`/locations/${venue.id}`)}
             >
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-lg font-medium text-gray-900 group-hover:text-gray-700 transition-colors duration-300">

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 interface ProtectedHeaderProps {
-  currentPage?: "calendar" | "events" | "venues";
+  currentPage?: "calendar" | "events" | "venues" | "profile";
 }
 
 export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
@@ -41,8 +41,7 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
               }`}
             >
               Events
-            </button>
-            <button
+            </button>            <button
               onClick={() => router.push("/locations")}
               className={`text-sm transition-all duration-300 hover:scale-105 ${
                 currentPage === "venues"
@@ -52,6 +51,18 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
             >
               Venues
             </button>
+            {user?.role === "STUDENT" && (
+              <button
+                onClick={() => router.push("/profile")}
+                className={`text-sm transition-all duration-300 hover:scale-105 ${
+                  currentPage === "profile"
+                    ? "font-medium text-gray-900 border-b-2 border-gray-900 pb-1"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                My Events
+              </button>
+            )}
           </nav>
 
           {/* User info and sign out */}

@@ -123,10 +123,7 @@ export default function NewEventPage() {
   return (
     <div className="min-h-screen bg-white">
       <ProtectedHeader
-        title="Create Event"
-        subtitle="Let's bring your vision to life 🎨"
-        backTo="/events"
-        backLabel="Events"
+        currentPage="events"
       />
 
       <main className="max-w-4xl mx-auto px-6 py-6">

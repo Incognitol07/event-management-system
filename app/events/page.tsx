@@ -148,10 +148,12 @@ export default function EventsPage() {
           </div>
         ) : (
           <div className="space-y-4">
+            {" "}
             {filteredEvents.map((event) => (
               <div
                 key={event.id}
-                className="border border-gray-200 p-6 hover:bg-gray-50 transition-colors"
+                className="border border-gray-200 p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                onClick={() => router.push(`/events/${event.id}`)}
               >
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
@@ -176,7 +178,10 @@ export default function EventsPage() {
                   </div>
                   {canApprove && !event.isApproved && (
                     <button
-                      onClick={() => approveEvent(event.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        approveEvent(event.id);
+                      }}
                       className="ml-4 text-sm bg-green-600 text-white px-3 py-1 hover:bg-green-700 transition-colors"
                     >
                       Approve
