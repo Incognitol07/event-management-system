@@ -252,6 +252,22 @@ export default function NewEventPage() {
       <ProtectedHeader currentPage="events" />
 
       <main className="max-w-4xl mx-auto px-6 py-6">
+        {/* Back button */}
+        <button
+          onClick={() => router.back()}
+          className="text-sm text-gray-600 hover:text-gray-900 mb-6 flex items-center space-x-2"
+        >
+          <span>←</span>
+          <span>Back</span>
+        </button>
+
+        {/* Page header */}
+        <div className="mb-8">
+          <h1 className="text-2xl font-light text-gray-900">Create New Event</h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Fill out the details below to create your event
+          </p>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title */}
           <div className="group">
