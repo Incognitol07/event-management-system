@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -36,9 +37,11 @@ export default function LoginPage() {
       {" "}
       {/* Animated header */}
       <header className="px-6 py-4 border-b border-gray-100 group">
-        <div className="text-sm font-medium text-gray-900 tracking-wide transition-all duration-500 group-hover:tracking-[0.3em] cursor-default">
-          University Event Management
-        </div>
+        <Link href="/">
+          <div className="text-sm font-medium text-gray-900 tracking-wide transition-all duration-500 group-hover:tracking-[0.3em] cursor-default">
+            University Event Management
+          </div>
+        </Link>
       </header>
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-6">
