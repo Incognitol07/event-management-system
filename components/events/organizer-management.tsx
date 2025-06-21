@@ -171,17 +171,15 @@ export default function OrganizerManagement({
           Organizers
         </h3>
         {canManageOrganizers() && (
-            <button
-                onClick={() => setShowAddForm(!showAddForm)}
-                className="group relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 border border-gray-200 bg-transparent rounded-xl transition-all duration-300 hover:bg-gray-900 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:scale-95"
-            >
-                <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
-                    {showAddForm ? "Cancel" : "Add Co-Organizer"}
-                </span>
-                <div
-                    className="absolute inset-0 bg-gray-900 rounded-xl transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"
-                />
-            </button>
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="group relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 border border-gray-200 bg-transparent rounded-xl transition-all duration-300 hover:bg-gray-900 hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
+          >
+            <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
+              {showAddForm ? "Cancel" : "Add Co-Organizer"}
+            </span>
+            <div className="absolute inset-0 bg-gray-900 rounded-xl transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+          </button>
         )}
       </div>
 
@@ -344,29 +342,29 @@ export default function OrganizerManagement({
                       {searchResults.map((user, index) => (
                         <div
                           key={user.id}
-                          className={`group flex items-center justify-between p-4 transition-all duration-300 hover:bg-gray-50 ${
+                          className={`flex items-center justify-between p-4 transition-all duration-300 hover:bg-gray-50 ${
                             index !== searchResults.length - 1
                               ? "border-b border-gray-50"
                               : ""
                           }`}
                         >
                           <div className="flex-1">
-                            <div className="font-medium text-gray-900 transition-colors duration-300 group-hover:text-gray-700">
+                            <div className="font-medium text-gray-900 transition-colors duration-300 hover:text-gray-700">
                               {user.name}
                             </div>
-                            <div className="text-sm text-gray-500 transition-colors duration-300 group-hover:text-gray-600">
+                            <div className="text-sm text-gray-500 transition-colors duration-300 hover:text-gray-600">
                               {user.email}
                             </div>
-                            <div className="text-xs text-gray-400 uppercase tracking-wider transition-colors duration-300 group-hover:text-gray-500">
+                            <div className="text-xs text-gray-400 uppercase tracking-wider transition-colors duration-300 hover:text-gray-500">
                               {user.role}
                             </div>
                           </div>
                           <button
                             onClick={() => addOrganizer(user.id)}
                             disabled={isAdding}
-                            className="ml-4 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 border border-gray-200 bg-transparent rounded-xl transition-all duration-300 hover:bg-gray-900 hover:text-white hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-900 disabled:hover:translate-y-0"
+                            className="ml-4 group relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 border border-gray-200 bg-transparent rounded-xl transition-all duration-300 hover:bg-gray-900 hover:text-white hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-900 disabled:hover:translate-y-0"
                           >
-                            <span className="relative z-10 transition-colors duration-300">
+                            <span className="relative z-10 transition-colors duration-300 group-hover:text-white">
                               {isAdding ? "Adding..." : "Add"}
                             </span>
                             <div className="absolute inset-0 bg-gray-900 rounded-xl transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></div>

@@ -191,12 +191,17 @@ export default function EventDetailPage() {
   if (!user || !event) {
     return null;
   }
-
   const canApprove = user.role === "ADMIN" && !event.isApproved;
   const canRSVP = event.isApproved && user.role === "STUDENT";
   const isEventFull = event._count.rsvps >= event.capacity;
   const acceptedRSVPs =
     event.rsvps?.filter((rsvp) => rsvp.status === "ACCEPTED") || [];
+
+  // Check if current user is an organizer for this event
+  const isOrganizer =
+    event.createdBy.name === user.name ||
+    event.organizers?.some((org) => org.userId === user?.id) ||
+    false;
 
   return (
     <div className="min-h-screen bg-white">
@@ -208,7 +213,7 @@ export default function EventDetailPage() {
           className="text-sm text-gray-600 hover:text-gray-900 mb-4 flex items-center space-x-2"
         >
           <span>←</span>
-          <span>Back to Events</span>
+          <span>Back</span>
         </button>
 
         {/* Event header */}
@@ -271,21 +276,10 @@ export default function EventDetailPage() {
               </h2>
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {event.description}
-              </p>
+              </p>{" "}
             </div>
-            {/* Memo (if exists) */}
-            {event.memo && (
-              <div>
-                <h2 className="text-xl font-medium text-gray-900 mb-2">
-                  Additional Information
-                </h2>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {event.memo}
-                </p>
-              </div>
-            )}
             {/* Attendees (if user can see them) */}
-            {(user.role === "ADMIN" || user.role === "ORGANIZER") &&
+            {(user.role === "ADMIN" || isOrganizer) &&
               acceptedRSVPs.length > 0 && (
                 <div>
                   <h2 className="text-xl font-medium text-gray-900 mb-2">
@@ -312,16 +306,9 @@ export default function EventDetailPage() {
                 />
               </div>
             )}{" "}
-            {/* Resource View for organizers and staff */}
-            {user.role !== "ADMIN" && (
-              <ResourceView
-                eventId={parseInt(eventId)}
-                isOrganizer={
-                  event.createdBy.name === user.name ||
-                  event.organizers?.some((org) => org.userId === user?.id) ||
-                  false
-                }
-              />
+            {/* Resource View for organizers only */}
+            {isOrganizer && user.role !== "ADMIN" && (
+              <ResourceView eventId={parseInt(eventId)} isOrganizer={true} />
             )}
           </div>{" "}
           {/* Sidebar */}
@@ -364,9 +351,7 @@ export default function EventDetailPage() {
               </div>
             </div>
             {/* Organizer Management - Show for organizers and admins */}
-            {(user?.role === "ADMIN" ||
-              event.organizers?.some((org) => org.userId === user?.id) ||
-              event.createdBy.name === user?.name) && (
+            {(user?.role === "ADMIN" || isOrganizer) && (
               <div className="border border-gray-200 p-4">
                 <OrganizerManagement
                   eventId={event.id}
