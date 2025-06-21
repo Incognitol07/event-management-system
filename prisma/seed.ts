@@ -15,7 +15,7 @@ async function main() {  // Clear existing data
   const admin = await prisma.user.create({
     data: {
       name: 'Admin User',
-      email: 'admin@university.edu',
+      email: 'admin@cu.edu.ng',
       role: Role.ADMIN,
     },
   })
@@ -23,15 +23,15 @@ async function main() {  // Clear existing data
   const coordinator = await prisma.user.create({
     data: {
       name: 'John Coordinator',
-      email: 'coordinator@university.edu',
-      role: Role.STAFF,
+      email: 'coordinator@cu.edu.ng',
+      role: Role.ORGANIZER,
     },
   })
 
   const student1 = await prisma.user.create({
     data: {
       name: 'Alice Student',
-      email: 'alice@university.edu',
+      email: 'alice@cu.edu.ng',
       role: Role.STUDENT,
       matricNo: 'ST001',
     },
@@ -40,7 +40,7 @@ async function main() {  // Clear existing data
   const student2 = await prisma.user.create({
     data: {
       name: 'Bob Student',
-      email: 'bob@university.edu',
+      email: 'bob@cu.edu.ng',
       role: Role.STUDENT,
       matricNo: 'ST002',
     },

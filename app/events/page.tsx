@@ -130,7 +130,7 @@ export default function EventsPage() {
   });
 
   const canApprove = user.role === "ADMIN";
-  const canCreate = user.role === "ADMIN" || user.role === "STAFF";
+  const canCreate = user.role === "ADMIN" || user.role === "ORGANIZER";
   return (
     <div className="min-h-screen bg-white">
       <ProtectedHeader currentPage="events" />

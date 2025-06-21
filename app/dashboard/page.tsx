@@ -21,7 +21,7 @@ export default function Dashboard() {
     return null;
   }
 
-  const canCreateEvents = user.role === "ADMIN" || user.role === "STAFF";
+  const canCreateEvents = user.role === "ADMIN" || user.role === "ORGANIZER";
   return (
     <div className="min-h-screen bg-white">
       <ProtectedHeader currentPage="calendar" />

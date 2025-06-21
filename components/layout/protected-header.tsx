@@ -28,6 +28,7 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
         <div className="flex justify-between items-center">
           {/* Navigation */}
           <nav className="flex space-x-8">
+            {/* Calendar - All roles */}
             <button
               onClick={() => router.push("/dashboard")}
               className={`text-sm transition-all duration-300 hover:scale-105 ${
@@ -38,6 +39,8 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
             >
               Calendar
             </button>
+
+            {/* Events - All roles */}
             <button
               onClick={() => router.push("/events")}
               className={`text-sm transition-all duration-300 hover:scale-105 ${
@@ -48,16 +51,8 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
             >
               Events
             </button>
-            <button
-              onClick={() => router.push("/organizer")}
-              className={`text-sm transition-all duration-300 hover:scale-105 ${
-                currentPage === "organizer"
-                  ? "font-medium text-gray-900 border-b-2 border-gray-900 pb-1"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              My Events
-            </button>{" "}
+
+            {/* Venues - All roles */}
             <button
               onClick={() => router.push("/locations")}
               className={`text-sm transition-all duration-300 hover:scale-105 ${
@@ -68,6 +63,36 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
             >
               Venues
             </button>
+
+            {/* Profile - Students only */}
+            {user?.role === "STUDENT" && (
+              <button
+                onClick={() => router.push("/profile")}
+                className={`text-sm transition-all duration-300 hover:scale-105 ${
+                  currentPage === "profile"
+                    ? "font-medium text-gray-900 border-b-2 border-gray-900 pb-1"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Profile
+              </button>
+            )}
+
+            {/* My Events - Organizers only */}
+            {user?.role === "ORGANIZER" && (
+              <button
+                onClick={() => router.push("/organizer")}
+                className={`text-sm transition-all duration-300 hover:scale-105 ${
+                  currentPage === "organizer"
+                    ? "font-medium text-gray-900 border-b-2 border-gray-900 pb-1"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                My Events
+              </button>
+            )}
+
+            {/* Resources - Admin only */}
             {user?.role === "ADMIN" && (
               <button
                 onClick={() => router.push("/resources")}
@@ -78,18 +103,6 @@ export default function ProtectedHeader({ currentPage }: ProtectedHeaderProps) {
                 }`}
               >
                 Resources
-              </button>
-            )}
-            {user?.role === "STUDENT" && (
-              <button
-                onClick={() => router.push("/profile")}
-                className={`text-sm transition-all duration-300 hover:scale-105 ${
-                  currentPage === "profile"
-                    ? "font-medium text-gray-900 border-b-2 border-gray-900 pb-1"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
-              >
-                My Events
               </button>
             )}
           </nav>

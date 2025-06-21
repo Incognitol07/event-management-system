@@ -6,7 +6,7 @@ type User = {
   id: number;
   name: string;
   email: string;
-  role: "ADMIN" | "STAFF" | "STUDENT";
+  role: "ADMIN" | "ORGANIZER" | "STUDENT";
   matricNo?: string;
 };
 
@@ -26,29 +26,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Demo users for quick testing
   const demoUsers: Record<string, User> = {
-    "admin@university.edu": {
+    "admin@cu.edu.ng": {
       id: 1,
       name: "Admin User",
-      email: "admin@university.edu",
+      email: "admin@cu.edu.ng",
       role: "ADMIN",
     },
-    "coordinator@university.edu": {
+    "coordinator@cu.edu.ng": {
       id: 2,
       name: "John Coordinator",
-      email: "coordinator@university.edu",
-      role: "STAFF",
+      email: "coordinator@cu.edu.ng",
+      role: "ORGANIZER",
     },
-    "alice@university.edu": {
+    "alice@cu.edu.ng": {
       id: 3,
       name: "Alice Student",
-      email: "alice@university.edu",
+      email: "alice@cu.edu.ng",
       role: "STUDENT",
       matricNo: "ST001",
     },
-    "bob@university.edu": {
+    "bob@cu.edu.ng": {
       id: 4,
       name: "Bob Student",
-      email: "bob@university.edu",
+      email: "bob@cu.edu.ng",
       role: "STUDENT",
       matricNo: "ST002",
     },

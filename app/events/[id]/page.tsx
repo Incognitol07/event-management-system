@@ -273,7 +273,7 @@ export default function EventDetailPage() {
               </div>
             )}
             {/* Attendees (if user can see them) */}
-            {(user.role === "ADMIN" || user.role === "STAFF") &&
+            {(user.role === "ADMIN" || user.role === "ORGANIZER") &&
               acceptedRSVPs.length > 0 && (
                 <div>
                   <h2 className="text-xl font-medium text-gray-900 mb-4">

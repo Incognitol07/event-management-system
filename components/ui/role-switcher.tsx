@@ -11,19 +11,19 @@ const demoUsers: User[] = [
   {
     id: "1",
     name: "Dr. Sarah Admin",
-    email: "admin@university.edu",
+    email: "admin@cu.edu.ng",
     role: "admin",
   },
   {
     id: "2",
     name: "Mike Organizer",
-    email: "organizer@university.edu",
+    email: "organizer@cu.edu.ng",
     role: "organizer",
   },
   {
     id: "3",
     name: "Jane Student",
-    email: "student@university.edu",
+    email: "student@cu.edu.ng",
     role: "attendee",
   },
 ];

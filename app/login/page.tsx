@@ -27,10 +27,10 @@ export default function LoginPage() {
   };
 
   const demoAccounts = [
-    { email: "admin@university.edu", role: "Admin" },
-    { email: "coordinator@university.edu", role: "Staff" },
-    { email: "alice@university.edu", role: "Student" },
-    { email: "bob@university.edu", role: "Student" },
+    { email: "admin@cu.edu.ng", role: "Admin" },
+    { email: "coordinator@cu.edu.ng", role: "Staff" },
+    { email: "alice@cu.edu.ng", role: "Student" },
+    { email: "bob@cu.edu.ng", role: "Student" },
   ];
   return (
     <div className="min-h-screen bg-white flex flex-col">

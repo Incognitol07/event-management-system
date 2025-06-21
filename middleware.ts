@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 const protectedRoutes: Record<string, string[]> = {
   '/dashboard': [],
   '/events': [],
-  '/events/new': ['ADMIN', 'STAFF'],
+  '/events/new': ['ADMIN', 'ORGANIZER'],
   '/locations': [],
   '/calendar': [],
   '/resources': ['ADMIN'], // Only admins can manage resources
