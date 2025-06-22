@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import EventTicket from "@/components/events/event-ticket";
 import Modal from "@/components/ui/ticket-modal";
+import QRCode from "qrcode";
 
 interface TicketSectionProps {
   eventId: string;
@@ -91,9 +92,36 @@ export default function TicketSection({
       await fetchTicket();
     }
     setShowModal(true);
-  };
-  const handleDownloadTicket = () => {
+  };  const handleDownloadTicket = async () => {
     if (!ticketData) return;
+
+    // Generate QR code data
+    const qrData = JSON.stringify({
+      eventId: ticketData.event.id,
+      userId: ticketData.user.id,
+      rsvpId: ticketData.rsvp.id,
+      ticketNumber: ticketData.ticketNumber,
+      verificationCode: btoa(`${ticketData.event.id}:${ticketData.user.id}:${ticketData.rsvp.id}:${ticketData.rsvp.rsvpAt}`),
+    });
+
+    let qrCodeSVG = '';
+    try {
+      qrCodeSVG = await QRCode.toString(qrData, { 
+        type: 'svg',
+        width: 100,
+        margin: 0,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      });
+    } catch (error) {
+      console.error('Failed to generate QR code:', error);
+      // Fallback to placeholder
+      qrCodeSVG = `<svg width="100" height="100" style="background: white;">
+        <text x="50" y="50" text-anchor="middle" font-size="10" fill="#666">QR Code</text>
+      </svg>`;
+    }
 
     // Create a new window for printing
     const printWindow = window.open("", "_blank");
@@ -506,14 +534,11 @@ export default function TicketSection({
                   `
                       : ""
                   }
-                </div>
-
-                <!-- QR Code and ticket info -->
+                </div>                <!-- QR Code and ticket info -->
                 <div class="qr-section">
-                  <div class="detail-label">Verification Code</div>                  <div class="qr-container">
-                    <svg width="100" height="100" style="background: white;">
-                      <text x="50" y="50" text-anchor="middle" font-size="10" fill="#666">QR Code</text>
-                    </svg>
+                  <div class="detail-label">Verification Code</div>
+                  <div class="qr-container">
+                    ${qrCodeSVG}
                   </div>
                   <div class="detail-label">Ticket Number</div>
                   <div class="ticket-number">${ticketData.ticketNumber}</div>
