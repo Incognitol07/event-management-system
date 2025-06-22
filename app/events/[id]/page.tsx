@@ -9,6 +9,7 @@ import { ResourceAllocationModal } from "@/components/resources/resource-allocat
 import { ResourceView } from "@/components/resources/resource-view";
 import OrganizerManagement from "@/components/events/organizer-management";
 import TicketSection from "@/components/events/ticket-section";
+import ConfirmModal from "@/components/ui/confirm-modal";
 import { getRecurrenceDescription } from "@/lib/recurring-events";
 
 type Event = {
@@ -95,6 +96,13 @@ export default function EventDetailPage() {
     ResourceAllocation[]
   >([]);
   const [showResourceModal, setShowResourceModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    eventId: number | null;
+  }>({
+    isOpen: false,
+    eventId: null,
+  });
 
   useEffect(() => {
     if (user && eventId) {
@@ -168,7 +176,6 @@ export default function EventDetailPage() {
       setLoadingFeedback(false);
     }
   };
-
   const fetchResourceAllocations = async () => {
     if (!eventId) return;
 
@@ -180,6 +187,28 @@ export default function EventDetailPage() {
       }
     } catch (error) {
       console.error("Failed to fetch resource allocations:", error);
+    }
+  };
+
+  const deleteEvent = async () => {
+    if (!user || !event) return;
+
+    try {
+      const response = await fetch(`/api/events/${event.id}`, {
+        method: "DELETE",
+        headers: {
+          "x-user-id": user.id?.toString() || "",
+        },
+      });
+      if (response.ok) {
+        router.push("/organizer");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to delete event");
+      }
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+      alert("Failed to delete event");
     }
   };
 
@@ -357,7 +386,9 @@ export default function EventDetailPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {allocation.status == "APPROVED" ? " ":allocation.status}
+                            {allocation.status == "APPROVED"
+                              ? " "
+                              : allocation.status}
                           </span>
                         </div>
                       ))}
@@ -450,7 +481,7 @@ export default function EventDetailPage() {
                   </div>
                 )}{" "}
               </div>
-            </div>
+            </div>{" "}
             {/* Organizer Management - Show for organizers and admins */}
             {(user?.role === "ADMIN" || isOrganizer) && (
               <div className="border border-gray-200 p-4">
@@ -460,6 +491,22 @@ export default function EventDetailPage() {
                   onOrganizerAdded={fetchEvent}
                   onOrganizerRemoved={fetchEvent}
                 />
+              </div>
+            )}
+            {/* Event Actions - Show for organizers and admins */}
+            {(user?.role === "ADMIN" || isOrganizer) && (
+              <div className="border border-gray-200 p-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-3">
+                  Event Actions
+                </h3>
+                <button
+                  onClick={() =>
+                    setDeleteModal({ isOpen: true, eventId: event.id })
+                  }
+                  className="w-full px-4 py-2 text-sm text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 transition-colors rounded"
+                >
+                  Delete Event
+                </button>
               </div>
             )}
             {/* RSVP card */}{" "}
@@ -589,8 +636,7 @@ export default function EventDetailPage() {
             </div>
           </div>
         </div>
-      </main>
-
+      </main>{" "}
       {/* Resource Allocation Modal */}
       {user?.role === "ADMIN" && event && (
         <ResourceAllocationModal
@@ -602,6 +648,21 @@ export default function EventDetailPage() {
           existingAllocations={resourceAllocations}
         />
       )}
+      {/* Delete confirmation modal */}
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, eventId: null })}
+        onConfirm={() => {
+          if (deleteModal.eventId) {
+            deleteEvent();
+            setDeleteModal({ isOpen: false, eventId: null });
+          }
+        }}
+        title="Delete Event"
+        message="Are you sure you want to delete this event? This action cannot be undone and will free up all associated resource allocations."
+        confirmText="Delete Event"
+        confirmVariant="danger"
+      />
     </div>
   );
 }

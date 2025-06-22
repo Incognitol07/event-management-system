@@ -107,18 +107,24 @@ export default function OrganizerDashboard() {
       feedbackCount: allFeedback.length,
     });
   };
-
   const cancelEvent = async (eventId: number) => {
     try {
       const response = await fetch(`/api/events/${eventId}`, {
         method: "DELETE",
+        headers: {
+          "x-user-id": user?.id?.toString() || "",
+        },
       });
       if (response.ok) {
         fetchOrganizerData();
         setCancelModal({ isOpen: false, eventId: null });
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to delete event");
       }
     } catch (error) {
       console.error("Failed to cancel event:", error);
+      alert("Failed to delete event");
     }
   };
 
@@ -393,17 +399,15 @@ export default function OrganizerDashboard() {
                     >
                       View Details
                     </button>
-                    {!event.isApproved && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCancelModal({ isOpen: true, eventId: event.id });
-                        }}
-                        className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors"
-                      >
-                        Cancel Request
-                      </button>
-                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCancelModal({ isOpen: true, eventId: event.id });
+                      }}
+                      className="px-3 py-1 text-sm text-red-600 hover:text-red-800 transition-colors"
+                    >
+                      {event.isApproved ? "Delete Event" : "Cancel Request"}
+                    </button>
                   </div>
                 </div>
               </div>

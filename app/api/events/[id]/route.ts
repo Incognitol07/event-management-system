@@ -65,34 +65,58 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid event ID' }, { status: 400 })
     }
 
-    // First check if the event exists and is not approved
+    // Get user ID from headers
+    const userId = request.headers.get('x-user-id');
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if the event exists and get organizer/creator info
     const event = await prisma.event.findUnique({
       where: { id: eventId },
-      select: {
-        id: true,
-        isApproved: true,
-        createdById: true,
-      },
+      include: {
+        organizers: {
+          include: {
+            user: {
+              select: { id: true, role: true }
+            }
+          }
+        }
+      }
     })
 
     if (!event) {
       return NextResponse.json({ error: 'Event not found' }, { status: 404 })
     }
 
-    // Only allow deletion of unapproved events
-    if (event.isApproved) {
+    // Check if user has permission to delete this event
+    const currentUserId = parseInt(userId);
+    const isCreator = event.createdById === currentUserId;
+    const isOrganizer = event.organizers?.some(org => 
+      org.userId === currentUserId && 
+      (org.role === 'PRIMARY_ORGANIZER' || org.role === 'CO_ORGANIZER')
+    );
+
+    // Get user role to check if admin
+    const user = await prisma.user.findUnique({
+      where: { id: currentUserId },
+      select: { role: true }
+    });
+    const isAdmin = user?.role === 'ADMIN';
+
+    if (!isCreator && !isOrganizer && !isAdmin) {
       return NextResponse.json(
-        { error: 'Cannot delete approved events' }, 
-        { status: 400 }
+        { error: 'Only event organizers, creators, or admins can delete events' }, 
+        { status: 403 }
       )
     }
 
-    // Delete the event (this will cascade delete RSVPs, feedback, and resources)
+    // Delete the event (this will cascade delete related records including resource allocations)
     await prisma.event.delete({
       where: { id: eventId },
     })
 
-    return NextResponse.json({ message: 'Event cancelled successfully' })
+    return NextResponse.json({ message: 'Event deleted successfully' })
   } catch (error) {
     console.error('Error deleting event:', error)
     return NextResponse.json({ error: 'Failed to delete event' }, { status: 500 })
