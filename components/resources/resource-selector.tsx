@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Modal } from "../ui/modal";
+import { useAuth } from "@/lib/auth-context";
 
 interface Resource {
   id: number;
@@ -36,6 +37,7 @@ export function ResourceSelector({
   onResourceAllocated,
   existingAllocations,
 }: ResourceSelectorProps) {
+  const { user } = useAuth();
   const [resources, setResources] = useState<Resource[]>([]);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
     null
@@ -111,7 +113,6 @@ export function ResourceSelector({
       console.error("Error fetching resources:", error);
     }
   };
-
   const handleAllocateResource = async () => {
     if (!selectedResource) return;
 
@@ -121,6 +122,7 @@ export function ResourceSelector({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-user-id": user?.id?.toString() || "",
         },
         body: JSON.stringify({
           resourceId: selectedResource.id,

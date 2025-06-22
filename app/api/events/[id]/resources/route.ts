@@ -14,11 +14,24 @@ export async function POST(
     const body = await request.json();
     const { resourceId, quantityNeeded, notes } = body;
 
+    // Get user ID from headers
+    const userId = request.headers.get('x-user-id');
+    
     if (!resourceId || !quantityNeeded) {
       return NextResponse.json(
         { error: 'Resource ID and quantity are required' },
         { status: 400 }
       );
+    }
+
+    // Get user to check if they're admin
+    let isAdmin = false;
+    if (userId) {
+      const user = await prisma.user.findUnique({
+        where: { id: parseInt(userId) },
+        select: { role: true }
+      });
+      isAdmin = user?.role === 'ADMIN';
     }
 
     // Check if event exists
@@ -68,9 +81,7 @@ export async function POST(
         },
         { status: 400 }
       );
-    }
-
-    // Create or update resource allocation
+    }    // Create or update resource allocation
     const eventResource = await prisma.eventResource.upsert({
       where: {
         eventId_resourceId: {
@@ -81,14 +92,14 @@ export async function POST(
       update: {
         quantityNeeded,
         notes,
-        status: 'PENDING', // Reset to pending if updating
+        status: isAdmin ? 'APPROVED' : 'PENDING', // Auto-approve for admins
       },
       create: {
         eventId,
         resourceId,
         quantityNeeded,
         notes,
-        status: 'PENDING',
+        status: isAdmin ? 'APPROVED' : 'PENDING', // Auto-approve for admins
       },
       include: {
         resource: true,

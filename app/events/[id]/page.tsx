@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { format } from "date-fns";
 import ProtectedHeader from "@/components/layout/protected-header";
-import { ResourceSelector } from "@/components/resources/resource-selector";
+import { ResourceAllocationModal } from "@/components/resources/resource-allocation-modal";
 import { ResourceView } from "@/components/resources/resource-view";
 import OrganizerManagement from "@/components/events/organizer-management";
 import TicketSection from "@/components/events/ticket-section";
@@ -94,6 +94,7 @@ export default function EventDetailPage() {
   const [resourceAllocations, setResourceAllocations] = useState<
     ResourceAllocation[]
   >([]);
+  const [showResourceModal, setShowResourceModal] = useState(false);
 
   useEffect(() => {
     if (user && eventId) {
@@ -311,13 +312,77 @@ export default function EventDetailPage() {
               )}{" "}
             {/* Resource Management */}
             {user.role === "ADMIN" && (
-              <div>
-                <ResourceSelector
-                  eventId={parseInt(eventId)}
-                  eventDate={event.date}
-                  onResourceAllocated={fetchResourceAllocations}
-                  existingAllocations={resourceAllocations}
-                />
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Event Resources
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Manage resources allocated to this event
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowResourceModal(true)}
+                    className="group inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 border border-gray-200 bg-transparent transition-all duration-300 hover:border-gray-900 hover:shadow-sm rounded-lg"
+                  >
+                    <span className="transition-colors duration-300 group-hover:text-gray-900">
+                      Add Resource
+                    </span>
+                  </button>
+                </div>
+
+                {/* Current Resource Allocations Summary */}
+                {resourceAllocations.length > 0 && (
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <h4 className="text-sm font-medium text-gray-900 mb-3">
+                      Current Allocations ({resourceAllocations.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {resourceAllocations.slice(0, 3).map((allocation) => (
+                        <div
+                          key={allocation.id}
+                          className="flex justify-between items-center text-sm"
+                        >
+                          <span className="text-gray-700">
+                            {allocation.resource.name} (
+                            {allocation.quantityNeeded})
+                          </span>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              allocation.status === "APPROVED"
+                                ? "bg-green-100 text-green-700"
+                                : allocation.status === "PENDING"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {allocation.status == "APPROVED" ? " ":allocation.status}
+                          </span>
+                        </div>
+                      ))}
+                      {resourceAllocations.length > 3 && (
+                        <div className="text-xs text-gray-500 pt-2">
+                          +{resourceAllocations.length - 3} more resources...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {resourceAllocations.length === 0 && (
+                  <div className="border border-gray-200 rounded-lg p-6 text-center">
+                    <div className="text-gray-500 text-sm">
+                      No resources allocated to this event yet.
+                    </div>
+                    <button
+                      onClick={() => setShowResourceModal(true)}
+                      className="mt-2 text-sm text-gray-900 hover:underline"
+                    >
+                      Add your first resource
+                    </button>
+                  </div>
+                )}
               </div>
             )}{" "}
             {/* Resource View for organizers only */}
@@ -487,7 +552,6 @@ export default function EventDetailPage() {
               <h2 className="text-xl font-medium text-gray-900 mb-2">
                 Feedback
               </h2>
-
               {loadingFeedback ? (
                 <div className="animate-pulse space-y-3">
                   <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -521,11 +585,23 @@ export default function EventDetailPage() {
                 </div>
               ) : (
                 <div className="text-gray-600">No feedback yet.</div>
-              )}
+              )}{" "}
             </div>
           </div>
         </div>
       </main>
+
+      {/* Resource Allocation Modal */}
+      {user?.role === "ADMIN" && event && (
+        <ResourceAllocationModal
+          isOpen={showResourceModal}
+          onClose={() => setShowResourceModal(false)}
+          eventId={parseInt(eventId)}
+          eventDate={event.date}
+          onResourceAllocated={fetchResourceAllocations}
+          existingAllocations={resourceAllocations}
+        />
+      )}
     </div>
   );
 }

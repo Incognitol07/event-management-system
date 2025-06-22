@@ -185,15 +185,14 @@ export default function NewEventPage() {
       });
 
       if (eventResponse.ok) {
-        const newEvent = await eventResponse.json();
-
-        // If there are resource requests, create them
+        const newEvent = await eventResponse.json(); // If there are resource requests, create them
         if (resourceRequests.length > 0) {
           const resourcePromises = resourceRequests.map((request) =>
             fetch(`/api/events/${newEvent.id}/resources`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                "x-user-id": user?.id?.toString() || "",
               },
               body: JSON.stringify(request),
             })
@@ -263,7 +262,9 @@ export default function NewEventPage() {
 
         {/* Page header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-light text-gray-900">Create New Event</h1>
+          <h1 className="text-2xl font-light text-gray-900">
+            Create New Event
+          </h1>
           <p className="text-sm text-gray-600 mt-1">
             Fill out the details below to create your event
           </p>
