@@ -51,13 +51,32 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center relative">
           {/* Main headline with intentional typography */}
           <div className="mb-16 group cursor-default">
-            <h1 className="text-8xl md:text-9xl font-extralight text-gray-900 tracking-tighter leading-none mb-6 transform transition-all duration-1000 group-hover:scale-[1.02] group-hover:tracking-[-0.02em]">
+            <h1
+              className="
+                text-9xl md:text-[8.5rem]
+                font-extralight text-gray-900 tracking-tighter leading-none mb-6
+                transform transition-all duration-1000
+                group-hover:scale-[1.05] group-hover:tracking-[-0.02em]
+              "
+            >
               Events
             </h1>
 
             {/* Subtle accent line with perfect timing */}
-            <div className="relative h-px w-32 mx-auto bg-gray-900 transform origin-center transition-all duration-1200 group-hover:w-48 group-hover:bg-gray-600">
-              <div className="absolute top-0 left-1/2 w-1 h-1 bg-gray-900 rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-all duration-800 group-hover:scale-150"></div>
+            <div
+              className="
+                relative h-px w-40 mx-auto bg-gray-900
+                transform origin-center transition-all duration-1200
+                group-hover:w-56 group-hover:bg-gray-600
+              "
+            >
+              <div
+                className="
+                  absolute top-0 left-1/2 w-1 h-1 bg-gray-900 rounded-full
+                  transform -translate-x-1/2 -translate-y-1/2
+                  transition-all duration-800 group-hover:scale-150
+                "
+              ></div>
             </div>
           </div>
 
