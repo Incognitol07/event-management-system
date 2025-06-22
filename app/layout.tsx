@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "EventFlow - University Event Management",
-  description: "Modern event management system for universities",
+  title: "University Event Management",
+  description: "Modern event management system for Covenant University",
 };
 
 export default function RootLayout({
