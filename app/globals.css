@@ -39,6 +39,9 @@ body {
   color: #1e293b;
   font-feature-settings: "rlig" 1, "calt" 1;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 16px; /* Ensure minimum 16px for iOS zoom prevention */
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%; /* Prevent iOS text size adjustment */
 }
 
 /* Ensure all text is dark and readable */
@@ -46,6 +49,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #0f172a;
   font-weight: 700;
   letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 
 /* Fix card backgrounds */
@@ -229,4 +233,99 @@ h1, h2, h3, h4, h5, h6 {
 .interactive-card:hover {
   transform: scale(1.02) translateY(-4px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile Responsiveness Utilities */
+
+/* Touch-friendly minimum tap targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Prevent horizontal scroll on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Improve text readability on mobile */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+  
+  h1 {
+    font-size: 1.875rem; /* 30px */
+  }
+  
+  h2 {
+    font-size: 1.5rem; /* 24px */
+  }
+  
+  h3 {
+    font-size: 1.25rem; /* 20px */
+  }
+  
+  /* Ensure buttons are touch-friendly */
+  button, [role="button"], .btn {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+  
+  /* Better input styling on mobile */
+  input, select, textarea {
+    font-size: 16px; /* Prevent iOS zoom */
+    line-height: 1.4;
+  }
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 1024px) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Disable hover effects on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+  
+  .hover\:shadow-lg:hover {
+    box-shadow: none;
+  }
+  
+  .group:hover .group-hover\:scale-\[1\.05\] {
+    transform: none;
+  }
+  
+  .group:hover .group-hover\:tracking-\[-0\.02em\] {
+    letter-spacing: normal;
+  }
+}
+
+/* Line clamping utility */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }

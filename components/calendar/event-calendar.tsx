@@ -84,33 +84,34 @@ export default function EventCalendar() {
   const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : [];
   return (
     <div className="bg-white">
+      {" "}
       {/* Delightful calendar header */}
-      <div className="flex items-center justify-between mb-6 group">
+      <div className="flex items-center justify-between mb-4 sm:mb-6 group">
         <button
           onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-          className="text-lg text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 hover:-translate-x-1"
+          className="text-lg text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 hover:-translate-x-1 p-2 touch-manipulation"
         >
           ←
         </button>
-        <h2 className="text-lg font-medium text-gray-900 transition-all duration-300 cursor-default group-hover:scale-105">
+        <h2 className="text-lg sm:text-lg font-medium text-gray-900 transition-all duration-300 cursor-default group-hover:scale-105">
           {format(currentDate, "MMMM yyyy")}
         </h2>
         <button
           onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-          className="text-lg text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 hover:translate-x-1"
+          className="text-lg text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 hover:translate-x-1 p-2 touch-manipulation"
         >
           →
         </button>
-      </div>
-
+      </div>{" "}
       {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-px bg-gray-200 border border-gray-200">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
           <div
             key={day}
-            className="bg-gray-50 p-2 text-center text-xs font-medium text-gray-700"
+            className="bg-gray-50 p-2 text-center text-xs sm:text-sm font-medium text-gray-700"
           >
-            {day}
+            <span className="hidden sm:inline">{day}</span>
+            <span className="sm:hidden">{day.slice(0, 1)}</span>
           </div>
         ))}
 
@@ -123,40 +124,42 @@ export default function EventCalendar() {
               key={day.toISOString()}
               onClick={() => setSelectedDate(day)}
               className={`
-                min-h-[80px] p-2 bg-white cursor-pointer hover:bg-gray-50 transition-colors
+                min-h-[60px] sm:min-h-[80px] p-1 sm:p-2 bg-white cursor-pointer hover:bg-gray-50 transition-colors touch-manipulation
                 ${isSelected ? "bg-gray-900 text-white" : ""}
                 ${!isSameMonth(day, currentDate) ? "opacity-30" : ""}
               `}
             >
               <div
-                className={`text-sm font-medium mb-1 ${
+                className={`text-xs sm:text-sm font-medium mb-1 ${
                   isSelected ? "text-white" : "text-gray-900"
                 }`}
               >
                 {format(day, "d")}
               </div>
               <div className="space-y-1">
-                {dayEvents.slice(0, 2).map((event) => (
-                  <div
-                    key={event.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.location.href = `/events/${event.id}`;
-                    }}
-                    className={`text-xs px-1 py-0.5 rounded text-white cursor-pointer hover:opacity-80 transition-opacity ${
-                      isSelected
-                        ? "bg-white text-gray-900"
-                        : event.priority === "EMERGENCY"
-                        ? "bg-red-500"
-                        : getCategoryColor(event.category)
-                    }`}
-                    title={`${event.title} - Click to view details`}
-                  >
-                    {event.title.length > 10
-                      ? `${event.title.slice(0, 10)}...`
-                      : event.title}
-                  </div>
-                ))}
+                {dayEvents
+                  .slice(0, window.innerWidth < 640 ? 1 : 2)
+                  .map((event) => (
+                    <div
+                      key={event.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = `/events/${event.id}`;
+                      }}
+                      className={`text-xs px-1 py-0.5 rounded text-white cursor-pointer hover:opacity-80 transition-opacity ${
+                        isSelected
+                          ? "bg-white text-gray-900"
+                          : event.priority === "EMERGENCY"
+                          ? "bg-red-500"
+                          : getCategoryColor(event.category)
+                      }`}
+                      title={`${event.title} - Click to view details`}
+                    >
+                      {event.title.length > 10
+                        ? `${event.title.slice(0, 10)}...`
+                        : event.title}
+                    </div>
+                  ))}
                 {dayEvents.length > 2 && (
                   <div
                     className={`text-xs ${
@@ -171,7 +174,6 @@ export default function EventCalendar() {
           );
         })}
       </div>
-
       {/* Selected date events */}
       {selectedDate && (
         <div className="mt-6 pt-4 border-t border-gray-100">

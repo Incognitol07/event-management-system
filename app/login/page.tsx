@@ -34,9 +34,8 @@ export default function LoginPage() {
   ];
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {" "}
       {/* Animated header */}
-      <header className="px-6 py-4 border-b border-gray-100 group">
+      <header className="px-4 sm:px-6 py-4 border-b border-gray-100 group">
         <Link href="/">
           <div className="text-sm font-medium text-gray-900 tracking-wide transition-all duration-500 group-hover:tracking-[0.3em] cursor-default">
             University Event Management
@@ -44,12 +43,11 @@ export default function LoginPage() {
         </Link>
       </header>
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center px-6">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-8">
         <div className="w-full max-w-md">
-          {" "}
           {/* Welcoming heading with personality */}
-          <div className="text-center mb-8 group">
-            <h1 className="text-3xl font-light text-gray-900 mb-2 transition-all duration-300 group-hover:scale-105 cursor-default">
+          <div className="text-center mb-6 sm:mb-8 group">
+            <h1 className="text-2xl sm:text-3xl font-light text-gray-900 mb-2 transition-all duration-300 group-hover:scale-105 cursor-default">
               Welcome Back
             </h1>
             <p className="text-sm text-gray-600">
@@ -60,12 +58,12 @@ export default function LoginPage() {
             </p>
           </div>
           {/* Compact form with delightful interactions */}
-          <form onSubmit={handleSubmit} className="space-y-6 mb-8">
+          <form onSubmit={handleSubmit} className="space-y-6 mb-6 sm:mb-8">
             <div className="group">
               <input
                 type="email"
                 required
-                className="w-full text-base py-3 px-4 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 group-hover:border-gray-400"
+                className="w-full text-base py-3 px-4 border border-gray-200 focus:border-gray-900 focus:outline-none transition-all duration-300 group-hover:border-gray-400 touch-manipulation"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -81,11 +79,11 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full text-sm font-medium py-3 bg-gray-900 text-white hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 hover:scale-105 hover:shadow-lg"
+              className="w-full text-sm font-medium py-3 bg-gray-900 text-white hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 hover:scale-105 hover:shadow-lg touch-manipulation active:scale-95"
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
-          </form>{" "}
+          </form>
           {/* Demo accounts with personality */}
           <div className="border-t border-gray-100 pt-6">
             <h2 className="text-sm font-medium text-gray-900 mb-3">

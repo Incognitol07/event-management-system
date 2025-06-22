@@ -179,14 +179,13 @@ export default function OrganizerDashboard() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-white">
       <ProtectedHeader currentPage="organizer" />
-      <main className="max-w-6xl mx-auto px-6 py-6">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Page header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-light text-gray-900">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-light text-gray-900">
             Your Event Dashboard
           </h1>
           <p className="text-sm text-gray-600 mt-1">
@@ -195,8 +194,8 @@ export default function OrganizerDashboard() {
         </div>
 
         {/* Tab navigation */}
-        <div className="mb-8 border-b border-gray-200">
-          <nav className="flex space-x-8">
+        <div className="mb-6 sm:mb-8 border-b border-gray-200">
+          <nav className="flex flex-wrap space-x-4 sm:space-x-8 overflow-x-auto">
             {[
               { id: "overview", label: "Overview" },
               { id: "events", label: "My Events" },

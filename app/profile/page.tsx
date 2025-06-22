@@ -128,25 +128,24 @@ export default function MyEventsPage() {
     if (filter === "past") return eventDate < now && rsvp.status === "ACCEPTED";
     return rsvp.status === "ACCEPTED";
   });
-
   return (
     <div className="min-h-screen bg-white">
       <ProtectedHeader currentPage="profile" />
 
-      <main className="max-w-4xl mx-auto px-6 py-6">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Page header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-light text-gray-900">My Events</h1>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-light text-gray-900">My Events</h1>
           <p className="text-sm text-gray-600 mt-1">
             Events you've registered for and attended
           </p>
         </div>
 
         {/* Filter tabs */}
-        <div className="flex space-x-4 border-b border-gray-200 mb-6">
+        <div className="flex flex-wrap space-x-2 sm:space-x-4 border-b border-gray-200 mb-4 sm:mb-6 overflow-x-auto">
           <button
             onClick={() => setFilter("upcoming")}
-            className={`text-sm px-3 py-2 transition-all duration-300 ${
+            className={`text-sm px-3 py-2 transition-all duration-300 whitespace-nowrap ${
               filter === "upcoming"
                 ? "border-b-2 border-gray-900 font-medium text-gray-900"
                 : "text-gray-600 hover:text-gray-900"
@@ -174,12 +173,10 @@ export default function MyEventsPage() {
           >
             All
           </button>
-        </div>
-
-        {filteredRSVPs.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-4xl mb-4 opacity-60">📅</div>
-            <p className="text-lg text-gray-600">
+        </div>        {filteredRSVPs.length === 0 ? (
+          <div className="text-center py-8 sm:py-12">
+            <div className="text-3xl sm:text-4xl mb-4 opacity-60">📅</div>
+            <p className="text-base sm:text-lg text-gray-600">
               {filter === "upcoming"
                 ? "No upcoming events"
                 : filter === "past"
@@ -191,14 +188,14 @@ export default function MyEventsPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {filteredRSVPs.map((rsvp) => {
               const eventDate = new Date(rsvp.event.date);
               const isPastEvent = eventDate < now;
               const hasFeedback = rsvp.feedback !== null;
 
               return (
-                <div key={rsvp.id} className="border border-gray-200 p-6">
+                <div key={rsvp.id} className="border border-gray-200 p-4 sm:p-6 rounded-lg">{/* Added rounded-lg for mobile */}
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">

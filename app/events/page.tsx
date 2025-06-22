@@ -132,109 +132,111 @@ export default function EventsPage() {
   const canApprove = user.role === "ADMIN";
   const canCreate = user.role === "ADMIN" || user.role === "ORGANIZER";
   return (
-    <div className="min-h-screen bg-white">
-      <ProtectedHeader currentPage="events" />
+  <div className="min-h-screen bg-white">
+    <ProtectedHeader currentPage="events" />
 
-      <main className="max-w-6xl mx-auto px-6 py-6">
-        {/* Page header with title and actions */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h1 className="text-2xl font-light text-gray-900">Events</h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Manage and view all events
-              </p>
-            </div>
-            {canCreate && (
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      {/* Page header with title and actions */}
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-4 sm:space-y-0">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-light text-gray-900">
+              Events
+            </h1>
+            <p className="text-sm text-gray-600 mt-1">
+              Manage and view all events
+            </p>
+          </div>
+          {canCreate && (
+            <button
+              onClick={() => router.push("/events/new")}
+              className="bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-lg group w-full sm:w-auto touch-manipulation active:scale-95"
+            >
+              <span className="transition-all duration-300 group-hover:tracking-wider">
+                Create Event
+              </span>
+            </button>
+          )}{" "}
+        </div>
+        {/* Filter tabs */}{" "}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
+          <div className="flex space-x-2 sm:space-x-4 overflow-x-auto">
+            <button
+              onClick={() => setFilter("approved")}
+              className={`text-sm px-3 py-2 transition-all duration-300 whitespace-nowrap ${
+                filter === "approved"
+                  ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              Approved
+            </button>
+            {canViewPendingEvents && (
               <button
-                onClick={() => router.push("/events/new")}
-                className="bg-gray-900 text-white px-4 py-2 text-sm font-medium hover:bg-gray-800 transition-all duration-300 hover:scale-105"
-              >
-                New Event
-              </button>
-            )}
-          </div>{" "}
-          {/* Filter tabs */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-4">
-            <div className="flex space-x-4">
-              <button
-                onClick={() => setFilter("approved")}
+                onClick={() => setFilter("pending")}
                 className={`text-sm px-3 py-2 transition-all duration-300 ${
-                  filter === "approved"
+                  filter === "pending"
                     ? "border-b-2 border-gray-900 font-medium text-gray-900"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                Approved
+                Pending
               </button>
-              {canViewPendingEvents && (
-                <button
-                  onClick={() => setFilter("pending")}
-                  className={`text-sm px-3 py-2 transition-all duration-300 ${
-                    filter === "pending"
-                      ? "border-b-2 border-gray-900 font-medium text-gray-900"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
-                >
-                  Pending
-                </button>
-              )}
-              {canViewPendingEvents && (
-                <button
-                  onClick={() => setFilter("all")}
-                  className={`text-sm px-3 py-2 transition-all duration-300 ${
-                    filter === "all"
-                      ? "border-b-2 border-gray-900 font-medium text-gray-900"
-                      : "text-gray-600 hover:text-gray-900"
-                  }`}
-                >
-                  All
-                </button>
-              )}
-            </div>
-
-            {/* Category Filter */}
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700">
-                Category:
-              </label>
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="text-sm border border-gray-200 px-3 py-1 focus:border-gray-900 focus:outline-none transition-all duration-300"
+            )}
+            {canViewPendingEvents && (
+              <button
+                onClick={() => setFilter("all")}
+                className={`text-sm px-3 py-2 transition-all duration-300 ${
+                  filter === "all"
+                    ? "border-b-2 border-gray-900 font-medium text-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
               >
-                <option value="all">All Categories</option>
-                <option value="ACADEMIC">Academic</option>
-                <option value="SPIRITUAL">Spiritual</option>
-                <option value="SOCIAL">Social</option>
-                <option value="STUDENT_ORG">Student Organization</option>
-                <option value="SPORTS">Sports</option>
-                <option value="CULTURAL">Cultural</option>
-              </select>
-            </div>
+                All
+              </button>
+            )}
+          </div>{" "}
+          {/* Category Filter */}
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+            <label className="text-sm font-medium text-gray-700">
+              Category:
+            </label>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="text-sm border border-gray-200 px-3 py-2 focus:border-gray-900 focus:outline-none transition-all duration-300 w-full sm:w-auto"
+            >
+              <option value="all">All Categories</option>
+              <option value="ACADEMIC">Academic</option>
+              <option value="SPIRITUAL">Spiritual</option>
+              <option value="SOCIAL">Social</option>
+              <option value="STUDENT_ORG">Student Organization</option>
+              <option value="SPORTS">Sports</option>
+              <option value="CULTURAL">Cultural</option>
+            </select>
           </div>
         </div>
+      </div>
 
-        {filteredEvents.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-lg text-gray-600">No events found</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {" "}
-            {filteredEvents.map((event) => (
-              <div
-                key={event.id}
-                className="border border-gray-200 p-6 hover:bg-gray-50 transition-colors cursor-pointer"
-                onClick={() => router.push(`/events/${event.id}`)}
-              >
-                <div className="flex justify-between items-start mb-3">
-                  {" "}
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {event.title}
-                      </h3>
+      {filteredEvents.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-lg text-gray-600">No events found</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredEvents.map((event) => (
+            <div
+              key={event.id}
+              className="border border-gray-200 p-4 sm:p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={() => router.push(`/events/${event.id}`)}
+            >
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3">
+                <div className="flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {event.title}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
                       <span
                         className={`text-xs px-2 py-1 rounded ${getCategoryColor(
                           event.category
@@ -252,87 +254,87 @@ export default function EventsPage() {
                           Pending
                         </span>
                       )}
-                    </div>{" "}
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {event.description}
-                    </p>
-                    {/* Show resource requests for pending events (admin only) */}
-                    {!event.isApproved &&
-                      canApprove &&
-                      event.resources &&
-                      event.resources.length > 0 && (
-                        <div className="mb-3">
-                          <p className="text-xs font-medium text-gray-700 mb-1">
-                            Resource Requests:
-                          </p>
-                          <div className="flex flex-wrap gap-1">
-                            {event.resources
-                              .slice(0, 3)
-                              .map((resource, idx) => (
-                                <span
-                                  key={idx}
-                                  className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded"
-                                >
-                                  {resource.resource.name} (
-                                  {resource.quantityNeeded})
-                                </span>
-                              ))}
-                            {event.resources.length > 3 && (
-                              <span className="text-xs text-gray-500">
-                                +{event.resources.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
+                    </div>
                   </div>
-                  {canApprove && !event.isApproved && (
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-3 sm:line-clamp-2">
+                    {event.description}
+                  </p>
+                  {/* Show resource requests for pending events (admin only) */}
+                  {!event.isApproved &&
+                    canApprove &&
+                    event.resources &&
+                    event.resources.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-xs font-medium text-gray-700 mb-1">
+                          Resource Requests:
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {event.resources.slice(0, 3).map((resource, idx) => (
+                            <span
+                              key={idx}
+                              className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded"
+                            >
+                              {resource.resource.name} (
+                              {resource.quantityNeeded})
+                            </span>
+                          ))}
+                          {event.resources.length > 3 && (
+                            <span className="text-xs text-gray-500">
+                              +{event.resources.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}{" "}
+                </div>
+                {canApprove && !event.isApproved && (
+                  <div className="mt-3 sm:mt-0 sm:ml-4">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         approveEvent(event.id);
                       }}
-                      className="ml-4 text-sm bg-green-600 text-white px-3 py-1 hover:bg-green-700 transition-colors"
+                      className="text-sm bg-green-600 text-white px-3 py-2 hover:bg-green-700 transition-colors w-full sm:w-auto touch-manipulation active:scale-95"
                     >
                       Approve
                     </button>
-                  )}
-                </div>{" "}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {format(new Date(event.date), "MMM d, yyyy")}
-                    </div>
-                    <div>
-                      {event.startTime} – {event.endTime}
-                    </div>
                   </div>
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {event.venue.name}
-                    </div>
-                    <div>Cap: {event.capacity}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900">
-                      {event.createdBy.name}
-                    </div>
-                    <div>{event.createdBy.role}</div>
-                  </div>
-                  {event.department && (
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        Department
-                      </div>
-                      <div>{event.department}</div>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-      </main>
-    </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-sm text-gray-600">
+                <div>
+                  <div className="font-medium text-gray-900">
+                    {format(new Date(event.date), "MMM d, yyyy")}
+                  </div>
+                  <div>
+                    {event.startTime} – {event.endTime}
+                  </div>
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900">
+                    {event.venue.name}
+                  </div>
+                  <div>Cap: {event.capacity}</div>
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900">
+                    {event.createdBy.name}
+                  </div>
+                  <div>{event.createdBy.role}</div>
+                </div>
+                {event.department && (
+                  <div>
+                    <div className="font-medium text-gray-900">Department</div>
+                    <div>{event.department}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </main>
+  </div>
   );
 }
+

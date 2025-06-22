@@ -208,15 +208,14 @@ export default function EventDetailPage() {
     event.createdBy.name === user.name ||
     event.organizers?.some((org) => org.userId === user?.id) ||
     false;
-
   return (
     <div className="min-h-screen bg-white">
-      <ProtectedHeader currentPage="events" />{" "}
-      <main className="max-w-5xl mx-auto px-4 py-4">
+      <ProtectedHeader currentPage="events" />
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Back button */}
         <button
           onClick={() => router.back()}
-          className="text-sm text-gray-600 hover:text-gray-900 mb-4 flex items-center space-x-2"
+          className="text-sm text-gray-600 hover:text-gray-900 mb-4 flex items-center space-x-2 touch-manipulation"
         >
           <span>←</span>
           <span>Back</span>
@@ -224,23 +223,24 @@ export default function EventDetailPage() {
 
         {/* Event header */}
         <div className="mb-6">
-          {" "}
-          <div className="flex items-start justify-between mb-3">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 space-y-3 sm:space-y-0">
             <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-1">
-                <h1 className="text-3xl font-light text-gray-900">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-1">
+                <h1 className="text-2xl sm:text-3xl font-light text-gray-900">
                   {event.title}
                 </h1>
-                {event.priority === "EMERGENCY" && (
-                  <span className="text-sm bg-red-100 text-red-700 px-3 py-1 rounded">
-                    Emergency
-                  </span>
-                )}
-                {!event.isApproved && (
-                  <span className="text-sm bg-orange-100 text-orange-700 px-3 py-1 rounded">
-                    Pending Approval
-                  </span>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  {event.priority === "EMERGENCY" && (
+                    <span className="text-sm bg-red-100 text-red-700 px-3 py-1 rounded">
+                      Emergency
+                    </span>
+                  )}
+                  {!event.isApproved && (
+                    <span className="text-sm bg-orange-100 text-orange-700 px-3 py-1 rounded">
+                      Pending Approval
+                    </span>
+                  )}
+                </div>
               </div>
               <p className="text-gray-600">
                 Organized by {event.createdBy.name}
