@@ -52,38 +52,7 @@ export default function Dashboard() {
             <EventCalendar />
           </div>
           {/* Additional info section */}{" "}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <h3 className="font-medium text-gray-900 mb-2">
-                Event Categories
-              </h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
-                  <span className="text-gray-600">Academic</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-purple-100 border border-purple-200 rounded"></div>
-                  <span className="text-gray-600">Spiritual</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
-                  <span className="text-gray-600">Social</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-yellow-100 border border-yellow-200 rounded"></div>
-                  <span className="text-gray-600">Student Org</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-orange-100 border border-orange-200 rounded"></div>
-                  <span className="text-gray-600">Sports</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-pink-100 border border-pink-200 rounded"></div>
-                  <span className="text-gray-600">Cultural</span>
-                </div>
-              </div>
-            </div>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <h3 className="font-medium text-gray-900 mb-2">Quick Actions</h3>
