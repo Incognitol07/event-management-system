@@ -5,8 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 // Core User model - simplified roles
@@ -53,13 +53,13 @@ model Venue {
 model Event {
   id             Int             @id @default(autoincrement())
   title          String
-  description    String // Max 300 words enforced in app logic
+  description    String          @db.Text // Changed to TEXT to allow longer descriptions
   date           DateTime
   startTime      String // Store as string for simplicity (HH:MM format)
   endTime        String
   venueId        Int
   capacity       Int
-  memo           String
+  memo           String          @db.Text // Changed to TEXT to allow longer memos
   isApproved     Boolean         @default(false)
   priority       Priority        @default(NORMAL)
   category       EventCategory   @default(ACADEMIC)
@@ -150,7 +150,7 @@ model Feedback {
   eventId   Int
   userId    Int
   rating    Int // 1-5 scale
-  comment   String?
+  comment   String?  @db.Text // Changed to TEXT for longer comments
   createdAt DateTime @default(now())
 
   // Relationships
@@ -165,7 +165,7 @@ model Feedback {
 model Resource {
   id          Int              @id @default(autoincrement())
   name        String
-  description String?
+  description String?          @db.Text // Changed to TEXT for longer descriptions
   category    ResourceCategory
   totalCount  Int              @default(1) // Total available quantity
   isActive    Boolean          @default(true)
@@ -197,7 +197,7 @@ model EventResource {
   status         ResourceStatus @default(PENDING)
   approvedAt     DateTime?
   approvedBy     Int? // Admin who approved the resource
-  notes          String? // Additional notes about resource allocation
+  notes          String?        @db.Text // Additional notes about resource allocation - changed to TEXT
   createdAt      DateTime       @default(now())
 
   // Relationships
