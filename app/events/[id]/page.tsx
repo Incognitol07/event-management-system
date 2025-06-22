@@ -8,6 +8,7 @@ import ProtectedHeader from "@/components/layout/protected-header";
 import { ResourceSelector } from "@/components/resources/resource-selector";
 import { ResourceView } from "@/components/resources/resource-view";
 import OrganizerManagement from "@/components/events/organizer-management";
+import TicketSection from "@/components/events/ticket-section";
 import { getRecurrenceDescription } from "@/lib/recurring-events";
 
 type Event = {
@@ -284,6 +285,13 @@ export default function EventDetailPage() {
                 {event.description}
               </p>{" "}
             </div>
+            {canRSVP && user && (
+              <TicketSection
+                eventId={eventId}
+                userId={user.id}
+                userRSVP={userRSVP}
+              />
+            )}
             {/* Attendees (if user can see them) */}
             {(user.role === "ADMIN" || isOrganizer) &&
               acceptedRSVPs.length > 0 && (
