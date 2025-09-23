@@ -21,7 +21,6 @@ A full-stack university event management system designed to help organizers, adm
 | ------------------------ | ---------------------------------------------------------- |
 | Event Approval Workflow  | Track submissions, approvals, and rejections in one place. |
 | Venue & Resource Booking | Prevent double-booked venues with automated scheduling.    |
-| QR Ticketing & RSVPs     | Real-time check-ins and attendee tracking.                 |
 | Role-Specific Dashboards | Tailored views for admins, organizers, and students.       |
 | Feedback & Reporting     | Gather insights from events to improve future planning.    |
 
@@ -83,5 +82,3 @@ Visit [http://localhost:3000](http://localhost:3000) to access the application.
 ## 📄 License
 
 MIT License — see the LICENSE file for details.
-
-If you want, I can also **rewrite the Features section in a more “developer-friendly” way** that emphasizes extendibility and code structure rather than outcomes for students. This makes it even cleaner for GitHub audiences. Do you want me to do that next?
