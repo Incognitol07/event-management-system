@@ -1,72 +1,87 @@
-# 🎉 CUEvents — Powering Campus Events with Clarity, Control, and Community
+# Campus Event Management System
 
-**CUEvents** is a full-stack university event management system that reduces approval delays by 60%, increases student attendance by up to 3x, and gives organizers and admins the tools they need to move faster — all while offering a clean, extensible codebase developers love.
+**Run campus events smarter: faster approvals, higher engagement, and a developer-friendly codebase.**
 
----
-
-## 👨‍🎓 For Schools & Student Affairs
-
-> **Problem:** Universities rely on spreadsheets, WhatsApp groups, and paper forms to manage events — leading to confusion, double-booked venues, and low student engagement.
-
-CUEvents fixes that.
-
-### ✅ Outcomes
-
-* ⏱️ **60% faster event approvals** with built-in workflows
-* 🏫 **3x increase in student attendance** via discovery & RSVPs
-* 🔁 **100+ hours saved per semester** through automated scheduling & resource booking
+A full-stack university event management system designed to help organizers, admins, and students manage events efficiently. Focused on clarity, transparency, and actionable insights, the platform reduces approval delays, improves student attendance, and provides a structured foundation for developers.
 
 ---
 
-## 🛠 For Developers
+## 🎯 Key Goals
 
-CUEvents is plug-and-play, written with modern tech you already know:
-
-* **Next.js 14 App Router**
-* **Tailwind CSS**, **Prisma**, **MySQL**, **ShadCN UI**
-* **Modular & extendable** — add features without rewriting the core
-* Local dev setup in minutes
-* Built-in RBAC with admin, student, and organizer roles
-
-> Use it out-of-the-box or fork to create white-label versions for different institutions.
+* Streamline event approval workflows for administrators.
+* Improve event visibility and attendance for students.
+* Provide role-specific dashboards for organizers, students, and admins.
+* Offer a clean, modular codebase for developers to extend and customize.
 
 ---
 
-## 🔑 Features at a Glance
+## 💡 Features
 
-| Feature                     | Impact                                       |
-| --------------------------- | -------------------------------------------- |
-| 🎟️ QR Ticketing & RSVPs    | Real-time check-ins. Stop gatecrashing.      |
-| 🏫 Venue & Resource Booking | Never double-book again.                     |
-| ⏳ Event Approval Workflow   | Faster decisions, transparent records.       |
-| 📊 Feedback & Reporting     | Know what worked, improve what didn’t.       |
-| 👥 Role-specific Dashboards | Everyone sees what they need — nothing more. |
+| Feature                  | Description                                                |
+| ------------------------ | ---------------------------------------------------------- |
+| Event Approval Workflow  | Track submissions, approvals, and rejections in one place. |
+| Venue & Resource Booking | Prevent double-booked venues with automated scheduling.    |
+| QR Ticketing & RSVPs     | Real-time check-ins and attendee tracking.                 |
+| Role-Specific Dashboards | Tailored views for admins, organizers, and students.       |
+| Feedback & Reporting     | Gather insights from events to improve future planning.    |
 
 ---
 
-## 🧪 Get Started (Developers)
+## 🛠 Technology Stack
+
+* **Frontend:** Next.js 14 (App Router), Tailwind CSS, ShadCN UI
+* **Backend:** Node.js, Prisma ORM, MySQL
+* **Authentication & Roles:** RBAC for admin, student, and organizer accounts
+* **Dev Tools:** pnpm, Docker (optional for local development)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/incognitol07/event-management-system
+git clone https://github.com/incognitol07/event-management-system.git
 cd event-management-system
+```
+
+### 2. Install Dependencies
+
+```bash
 pnpm install
-cp .env.example .env # Add your DB config
+cp .env.example .env  # configure your database
 pnpm prisma migrate dev
+```
+
+### 3. Start the Development Server
+
+```bash
 pnpm dev
 ```
 
----
-
-## 🤝 Deployable in Weeks, Not Semesters
-
-We built CUEvents in just **6 weeks** with a lean student team — proof that functional, user-centered tools don't have to take forever.
-
-> Want to pilot CUEvents at your university? Let's talk.
+Visit [http://localhost:3000](http://localhost:3000) to access the application.
 
 ---
 
-## 🎯 TL;DR
+## 🧪 Developer Notes
 
-> A scalable campus events platform that delights developers and decision-makers alike — with real results.
+* Modular architecture makes it easy to extend features without rewriting the core.
+* Role-based access control ensures that users only see what they need.
+* Prisma ORM provides type-safe database interactions and migrations.
 
 ---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Implement your changes and add tests
+4. Submit a pull request
+
+---
+
+## 📄 License
+
+MIT License — see the LICENSE file for details.
+
+If you want, I can also **rewrite the Features section in a more “developer-friendly” way** that emphasizes extendibility and code structure rather than outcomes for students. This makes it even cleaner for GitHub audiences. Do you want me to do that next?
