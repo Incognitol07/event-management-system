@@ -1,4 +1,6 @@
+import dotenv from 'dotenv'
 import { PrismaClient, Role, Priority, ResourceCategory } from '../generated/prisma'
+dotenv.config()
 
 const prisma = new PrismaClient()
 
